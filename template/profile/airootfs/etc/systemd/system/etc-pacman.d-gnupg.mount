@@ -1,0 +1,21 @@
+# The pacman keyring is mounted as a tmpfs at boot, so the trusted keys live in
+# memory and never touch the medium.
+#
+# This unit has to be shipped alongside pacman-init.service. The service
+# declares `Requires=etc-pacman.d-gnupg.mount`, and systemd treats a missing
+# requirement as a failed dependency: the service is dropped without a word in
+# the boot log, the keyring is never initialised, and pacman in the running
+# image cannot install anything.
+#
+# Upstream's baseline profile ships neither unit, so a baseline image has no
+# keyring at all. Upstream's releng profile ships both. A flavour that expects
+# to install things at runtime needs both.
+
+[Unit]
+Description=Temporary /etc/pacman.d/gnupg directory
+
+[Mount]
+What=tmpfs
+Where=/etc/pacman.d/gnupg
+Type=tmpfs
+Options=mode=0755,noswap

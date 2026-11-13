@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ArchISO Bootcamp Academy — lab</title>
+<meta name="description" content="An ArchISO Bootcamp Academy lab: do the thing, get checked, move on.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="assets/academy.css">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#/">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>ArchISO Bootcamp Academy</span>
+    </a>
+    <span class="brand-sub">build your own flavour</span>
+    <span class="topbar-spacer"></span>
+    <span class="progress-counter" data-progress-counter></span>
+  </div>
+</header>
+
+<main class="shell" data-app>
+  <noscript>
+    <section class="lab-scenario">
+      <p class="eyebrow">JavaScript needed</p>
+      <p class="scenario-text">
+        The labs run in your browser and check your work as you go, so they need
+        JavaScript switched on. Nothing is installed and nothing is downloaded.
+      </p>
+    </section>
+  </noscript>
+</main>
+
+<button class="agent-toggle" type="button" data-agent-toggle aria-label="Open the helper">?</button>
+<section class="agent-panel" data-agent-panel aria-label="Helper">
+  <div class="agent-head">
+    <h2>Helper</h2>
+    <button class="btn-link" type="button" data-agent-close>Close</button>
+  </div>
+  <div class="agent-body" data-agent-body>
+    <div class="agent-msg them">
+      Ask me anything about the labs. I answer from our wiki, so I know the
+      project — and I will tell you when I do not know something rather than
+      guess.
+    </div>
+  </div>
+  <form class="agent-form" data-agent-form>
+    <input type="text" data-agent-input placeholder="What are you stuck on?" autocomplete="off">
+    <button class="btn" type="submit">Ask</button>
+  </div>
+  <div class="agent-foot">
+    Answers come from our wiki. For a human: <a href="mailto:natalie@acreetionos.org">email</a> ·
+    <a href="https://discord.acreetionos.org">Discord</a>
+  </div>
+</section>
+
+<script type="module">
+  import { start } from './assets/shell.js';
+  import { mountAgent } from './assets/agent.js';
+  start();
+  mountAgent();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+# The academy worker.
+#
+# The one piece of the academy that cannot be a static file. Deploy with:
+#
+#     cd worker && npx wrangler deploy
+#
+# Secrets are set with `wrangler secret put <NAME>` — never in this file.
+# The names are in .dev.vars.example so the set of them is on the record.
+
+name = "acreetionos-academy"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+
+# The free Workers AI binding is used by default: it is on the same free tier
+# as the worker itself, so there is no second account and no second bill.
+[ai]
+binding = "AI"
+
+[vars]
+# Where the academy site is served from. The browser sends this as the
+# Origin header, and the worker answers CORS from it.
+ALLOWED_ORIGINS = "https://spivanatalie64.github.io"
+
+# The GitLab instance the learner's build repositories live on.
+GITLAB_BASE_URL = "https://gitlab.acreetionos.org"
+
+# The account the bot token belongs to. HAPPY_TOKEN is a secret.
+CF_ACCOUNT_ID = ""
+
+# The model. Workers AI by default; any OpenAI-compatible model id works if
+# OPENAI_BASE_URL and OPENAI_API_KEY are set instead.
+AGENT_MODEL = "@cf/meta/llama-3.1-8b-instruct"
+
+# ---------------------------------------------------------------------------
+# Secrets — set with `wrangler secret put NAME`. The values never appear in
+# the repository, in a log, or in chat.
+#
+#   HAPPY_TOKEN              the academy-build-bot access token. It is
+#                            Maintainer of the archiso-bootcamp-academy group
+#                            on our GitLab and of nothing else, so its reach
+#                            is one group of learner build projects.
+#   CF_API_TOKEN             the Cloudflare API token for Workers AI.
+#   GITLAB_OAUTH_CLIENT_ID   the OAuth application for the connect flow.
+#   GITLAB_OAUTH_CLIENT_SECRET
+#   GITLAB_OAUTH_REDIRECT_URI
+#   OPENAI_API_KEY           only if you use an OpenAI-compatible model.
+#   OPENAI_BASE_URL
+# ---------------------------------------------------------------------------
