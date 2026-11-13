@@ -12,6 +12,8 @@
  *     node tools/build-course-text.mjs
  *
  * The output is committed, because the worker fetches it from the repository.
+ * It is deterministic on purpose — no timestamps — so CI can regenerate it
+ * and expect to get exactly what was committed.
  */
 
 import { writeFileSync } from 'node:fs';
@@ -52,7 +54,6 @@ for (const lab of labs) {
 }
 
 const output = {
-  generated: new Date().toISOString(),
   labs: labs.length,
   pieces,
 };
