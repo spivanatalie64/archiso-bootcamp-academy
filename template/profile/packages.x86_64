@@ -1,0 +1,37 @@
+# Packages installed into the Vesper image.
+#
+# One package per line. Blank lines and lines starting with # are ignored.
+#
+# The first four are not optional:
+#   base             — the minimum userspace
+#   linux            — the kernel
+#   mkinitcpio      — builds the initramfs
+#   mkinitcpio-archiso — teaches the initramfs how to find the ISO's root
+#                       filesystem. Mandatory; archiso cannot produce a bootable
+#                       image without it.
+
+base
+linux
+mkinitcpio
+mkinitcpio-archiso
+
+# Boot loaders, matched to the bootmodes in profiledef.sh.
+syslinux
+grub
+
+# A shell and a text editor, so the image is usable from a serial console and
+# so a student can change something inside the running system.
+nano
+vim
+
+# Enough tooling to look around at what the image actually contains.
+git
+tree
+file
+
+# Remote access. The profile's airootfs enables sshd.service, and a
+# .wants symlink whose unit does not exist is silently ignored by systemd —
+# so without this package the image would carry an enablement for a service
+# that does not exist. Keep the profile's package list and its airootfs
+# agreeing with each other.
+openssh

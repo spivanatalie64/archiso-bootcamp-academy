@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Worker secrets. The names are in .dev.vars.example; the values are in
+# secure storage and never in this repository.
+.dev.vars
+.env
+
+# Build output
+dist/
+out/
+work/
+
+# Screenshots from the browser check
+screenshots/
+
+# OS and editor noise
+.DS_Store
+*~
+*.swp

@@ -1,0 +1,38 @@
+# The pacman keyring has to exist and be populated before pacman can verify
+# anything.
+#
+# `pacman-key --init` creates the keyring; `--populate` imports the keyrings
+# shipped by the archlinux-keyring package. Neither happens on its own.
+#
+# Two units are needed together, and this is the part that is easy to get
+# wrong:
+#
+#   etc-pacman.d-gnupg.mount   mounts a tmpfs over /etc/pacman.d/gnupg so the
+#                              trusted keys live in memory, not on the medium
+#   pacman-init.service        runs the two pacman-key commands
+#
+# The service declares `Requires=etc-pacman.d-gnupg.mount`. systemd treats a
+# missing requirement as a failed dependency and drops the service **without
+# saying anything in the boot log** — no error, no failure line. The symptom
+# is that the image boots fine, the login prompt appears, and pacman inside it
+# cannot install a single package.
+#
+# Upstream's baseline profile ships neither unit, so a baseline image has no
+# keyring at all. Upstream's releng profile ships both. A flavour that expects
+# to install things at runtime needs both.
+
+[Unit]
+Description=Initializes the Vesper pacman keyring
+Requires=etc-pacman.d-gnupg.mount
+After=etc-pacman.d-gnupg.mount time-sync.target
+BindsTo=etc-pacman.d-gnupg.mount
+Before=archlinux-keyring-wkd-sync.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/pacman-key --init
+ExecStart=/usr/bin/pacman-key --populate
+
+[Install]
+WantedBy=multi-user.target

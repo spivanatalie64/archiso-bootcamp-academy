@@ -1,0 +1,29 @@
+# Local development secrets for the worker.
+#
+# Copy to .dev.vars and fill in. NEVER commit the filled-in file.
+# .dev.vars is in .gitignore; this example is not.
+
+# HAPPY_TOKEN -- access token of the academy-build-bot account on
+# gitlab.acreetionos.org. That bot is Maintainer of the archiso-bootcamp-academy
+# group and nothing else, so this token's reach is one group: create learner
+# build projects there and trigger their CI/CD pipelines. The real value lives
+# in secure storage only -- never in this repo, never in chat.
+HAPPY_TOKEN=
+
+# The GitLab instance the academy builds on.
+GITLAB_BASE_URL=https://gitlab.acreetionos.org
+
+# The Cloudflare API token for Workers AI. Scoped to the AI binding.
+CF_API_TOKEN=
+CF_ACCOUNT_ID=
+
+# Only if you use an OpenAI-compatible model instead of Workers AI.
+# OPENAI_BASE_URL=https://api.openai.com/v1
+# OPENAI_API_KEY=
+# AGENT_MODEL=gpt-4o-mini
+
+# The OAuth application for the connect flow. Register it on your instance
+# with the redirect URI pointing at /api/connect/callback.
+GITLAB_OAUTH_CLIENT_ID=
+GITLAB_OAUTH_CLIENT_SECRET=
+GITLAB_OAUTH_REDIRECT_URI=https://acreetionos-academy.example.workers.dev/api/connect/callback

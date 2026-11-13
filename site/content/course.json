@@ -1,0 +1,757 @@
+{
+  "labs": 15,
+  "pieces": [
+    {
+      "label": "What an ISO is, and how to look around a machine — scenario",
+      "text": "Somebody has handed you a machine and asked a simple question: what is on it? You could poke at it with a mouse, but the honest way to answer — the way every system administrator answers, and the way every person who has built an ISO answers — is to open a terminal and look. This lab is that, once, slowly: you open a terminal, you find out where you are standing, you look at what is here, and you read a file. Later labs build an ISO image on top of exactly these skills, so nothing here is a warm-up for its own sake."
+    },
+    {
+      "label": "What an ISO is, and how to look around a machine — the lesson",
+      "text": "A terminal is a window into a machine. You type a line of text, press Enter, and the machine answers. There is no mouse involved, and nothing is hidden: every word you type does something you can see. A command is one of those lines. It starts with the name of a program, like ls or cat, followed by the words that say what to work on. A command is not a sentence and it needs no punctuation — just the program name, a space, and what you want it to act on. A file path is the name of a file written as a chain of folders separated by slashes. A path that starts with a slash is absolute: it means the same place on the machine no matter where you are standing, so /home/learner always means that one folder. A path without a leading slash is relative: it means \"this, starting from the folder you are standing in\", so notes means the notes folder inside wherever you happen to be. An ISO image is a single file that contains an entire filesystem — a whole operating system, its programs and its settings, packed into one file you can copy around and write to a USB stick, where it becomes a computer that boots without touching the computer's own drive. You would want to build one when you want a system that exists in a form you control: the exact programs, nothing extra, ready to boot on a machine you have never seen. And because an ISO image is just a file, you can keep it in a version history, put it on a server, and hand it to somebody else. A package is one piece of software, packaged up so it can be installed and removed as one unit, and a package manager is the program that does that installing and removing. You do not need to know anything about packages yet. You do need to know that this machine has a file system, folders, and files inside them, because that is what an ISO image is a picture of."
+    },
+    {
+      "label": "What an ISO is, and how to look around a machine — The machine in front of you",
+      "text": "The terminal below is a practice machine. It is a small, honest copy of a Linux machine: it has folders, it has files with text in them, and commands change it for real. Nothing you do in here can break anything on your own computer.\n\nYou start in /home/learner. That is your home folder — the folder that belongs to you, in the same way that your own home folder belongs to you. There are two things in it: a README.txt file, and a folder called notes.\n\nIf you get lost, or you break something, press \"Reset lab\". It puts the machine back exactly as it started, and it is always allowed."
+    },
+    {
+      "label": "What an ISO is, and how to look around a machine — How a command answers you",
+      "text": "Every command answers in the same shape. First comes output: the normal answer to what you asked. Sometimes there is an error as well, printed underneath. An error is not a punishment and it is not a wrong answer from you — it is the machine telling you that it could not do what you asked, and why.\n\nIf you type something the machine does not recognise at all, it says \"command not found\". That nearly always means one of two things: a typo, or a program that is not installed on this machine.\n\nErrors are part of the lesson, not a detour from it. In later labs the error messages are the most informative thing on the screen."
+    },
+    {
+      "label": "What an ISO is, and how to look around a machine — Where an ISO comes from",
+      "text": "An ISO image does not appear on its own. You describe it first, in a plain text file called a profile: what the image is called, what it contains, and which packages go into it. You then hand that description to a tool called archiso, and archiso builds the image from it.\n\nSo the path you are on in this lab — a folder of text files that describe something — is the same shape as the thing you will build later. That is why this lab is worth doing slowly."
+    },
+    {
+      "label": "What an ISO is, and how to look around a machine — task: Find out where you are standing. The command that prints this is called pwd. Then save the answer in a file called where-i-am.txt in your home folder.",
+      "text": "Find out where you are standing. The command that prints this is called pwd. Then save the answer in a file called where-i-am.txt in your home folder.\n\nTry `pwd` on its own first and read what it prints. Then try `pwd > where-i-am.txt` and see what happens.\n\nTwo steps: `pwd` to see the path, then `pwd > where-i-am.txt` to save that same answer into a file called where-i-am.txt.\n\nEvery other path on this machine is measured from wherever you are standing, so knowing where that is makes every path you use afterwards mean what you think it means. This is the first thing anyone does when they open a terminal on a machine they have never seen."
+    },
+    {
+      "label": "What an ISO is, and how to look around a machine — task: Now look at what is in this folder. The command that lists what is here is called ls. One of the names it prints is a folder called notes — move into it with cd.",
+      "text": "Now look at what is in this folder. The command that lists what is here is called ls. One of the names it prints is a folder called notes — move into it with cd.\n\n`ls` lists the names of the files and folders in the folder you are standing in. `cd` moves you into one of them.\n\nRun `ls` first, look for `notes`, then `cd notes`.\n\nListing tells you what you could open. Changing folder tells you what you will open by default. A path like `notes` only means something because you know where you are standing — that is why the first task came before this one."
+    },
+    {
+      "label": "What an ISO is, and how to look around a machine — task: Open iso-notes.txt in this folder and find the line that says what an ISO image is. Copy that line into a new file called answer.txt that lives in your home folder: /home/learner/answer.txt.",
+      "text": "Open iso-notes.txt in this folder and find the line that says what an ISO image is. Copy that line into a new file called answer.txt that lives in your home folder: /home/learner/answer.txt.\n\n`cat iso-notes.txt` shows you the whole file. `grep` picks out only the lines you ask for. And because you are standing in the notes folder, the answer file needs its full path — /home/learner/answer.txt — to land in your home folder.\n\n`grep \"ISO image is one file\" iso-notes.txt > /home/learner/answer.txt` writes just that one line into the file.\n\nReading is the skill; the file is only proof that you did it. Copying a line out of one file and into another is the most common thing anyone ever does in a shell, and it is exactly how a profile gets built out of pieces."
+    },
+    {
+      "label": "What an ISO is, and how to look around a machine — task: Make a folder for your own notes, called my-notes, in your home folder — the same place where where-i-am.txt is. You are standing in the notes folder, so this is a good moment to use a full path.",
+      "text": "Make a folder for your own notes, called my-notes, in your home folder — the same place where where-i-am.txt is. You are standing in the notes folder, so this is a good moment to use a full path.\n\nA path that starts with a slash is absolute — the same folder wherever you stand. A path without one is relative — \"inside wherever you are now\", which right now is the notes folder.\n\n`mkdir /home/learner/my-notes`\n\nWhen you build an ISO, the shape of your folders is the shape of the image. Knowing which of the two kinds of path you just used is the difference between a folder in the right place and a folder you cannot find later."
+    },
+    {
+      "label": "What an ISO is, and how to look around a machine — task: Put something in your new folder: a file called first-note.txt inside my-notes. Copy the notes file into it to get started, then read your copy back with cat so you know it really arrived.",
+      "text": "Put something in your new folder: a file called first-note.txt inside my-notes. Copy the notes file into it to get started, then read your copy back with cat so you know it really arrived.\n\n`cp` copies one file to another name and leaves the original alone. `cat` prints a file back to you. Use the full paths for both, because the folder you are standing in is not the folder you are writing to.\n\n`cp /home/learner/notes/iso-notes.txt /home/learner/my-notes/first-note.txt`, then `cat /home/learner/my-notes/first-note.txt`.\n\nThis is the whole loop of the lab: look, read, copy, read back. Reading a file back is how you confirm it is really there instead of trusting that it is. Later in the academy, the file you write will be a profile, and the profile is what becomes the ISO."
+    },
+    {
+      "label": "What an ISO is, and how to look around a machine — the point",
+      "text": "You opened a terminal on a machine you had never seen and you found out what was on it: where you were, what was in the folder, what the notes said, and what you could put somewhere new. Those five moves — look, list, read, make, write — are the whole of working in a shell. An ISO image is built out of exactly them."
+    },
+    {
+      "label": "pacman: searching, installing, removing — scenario",
+      "text": "Your profile says which packages belong on the image. Every one of those names is a package that pacman knows about, and pacman is what turns the names into files on a filesystem. Before you write a single line of a profile, you need to know what pacman actually does with that list: how to find a package, how to look at one before you trust it, how to install it, how to take it away again, and what a full update really means. This lab is a practice machine with pacman on it, and it is deliberately built so that some of the things you try will fail — because the errors are where the real understanding comes from."
+    },
+    {
+      "label": "pacman: searching, installing, removing — the lesson",
+      "text": "A package is one piece of software, packaged up so that it can be installed and removed as a single unit: a text editor, a web browser, a kernel. A package manager is the program that works with those packages — it downloads them, checks what they need, installs them, removes them, and keeps a list of what is installed. On Arch Linux the package manager is pacman, and the places it downloads from are called repositories. Here is why an ISO builder cares about any of this: the package list in a profile is a pacman list. When the image is built, that list is handed to pacman inside a brand new, empty filesystem, and pacman installs every name in it. So a name in your profile is not a label — it is an instruction, and pacman will stop the whole build on a name it does not recognise. Nobody should edit one of those lists without knowing what pacman does with it. The commands in this lab are the ones you will use every single time: pacman -Ss searches the repositories for a name, pacman -Qi shows you everything pacman knows about one package, pacman -S installs one, pacman -R removes one, pacman -Q lists what is installed, and pacman -Syu is a full update — the -Sy part refreshes pacman's copy of the repository lists and the -u part upgrades everything that is installed. A full update is a step of its own, done on purpose, not bundled into every install."
+    },
+    {
+      "label": "pacman: searching, installing, removing — The commands, and what each one is for",
+      "text": "pacman -Ss <word> — search the repositories. It prints the exact package name, its version, and one line describing it. You use this when you know roughly what you want but not what it is called.\n\npacman -Qi <name> — show information about one package: name, version, description, which repository it comes from, how big it is, and what it depends on. It works before the package is installed.\n\npacman -S <name> — install. pacman -R <name> — remove. pacman -Q — list every installed package, one name per line. pacman -Q <name> — ask about that one package.\n\npacman -Syu — the full update. -Sy refreshes the repository lists, -u upgrades the installed packages."
+    },
+    {
+      "label": "pacman: searching, installing, removing — Reading a pacman error",
+      "text": "Pacman refuses things. It will not install a package whose name it does not know, because it will not guess: a name that is one character off is not \"nearly right\", it is a different thing that does not exist.\n\nWhen that happens, pacman says so plainly: \"error: package 'something' was not found\". The name in the message is the name pacman could not find. Usually the name you wanted is one search away.\n\nThe same message comes back when you ask about a package that is not installed. That failure is not a fault. It is how pacman says \"no, and here is what I do know\".\n\nThe removal in this lab is done on the base package that came with the machine, because that is the one package already here to take off. On a real system you would remove something you had installed yourself."
+    },
+    {
+      "label": "pacman: searching, installing, removing — What an update really is",
+      "text": "Pacman keeps a local copy of the lists of packages the repositories offer. Those copies go stale, and when they are stale pacman is working from yesterday's idea of what exists.\n\nA full update fixes that in two moves: -Sy refreshes the copies, -u upgrades everything already installed against the fresh copies. Do it as its own step, deliberately, so you know the database was current before you chose what to install. On a real machine `pacman -Syu` on its own updates everything; on this practice machine an update needs a package name to act on."
+    },
+    {
+      "label": "pacman: searching, installing, removing — task: Look before you install. Search the repositories for a text editor with `pacman -Ss nano` — it prints the package name, its version, and one line describing it — and then install it with `pacman -S nano`.",
+      "text": "Look before you install. Search the repositories for a text editor with `pacman -Ss nano` — it prints the package name, its version, and one line describing it — and then install it with `pacman -S nano`.\n\nThe search flag is a capital S with a small s: -Ss. The install flag is a capital S on its own: -S. The word you search for goes after the flag.\n\n`pacman -Ss nano` to look, then `pacman -S nano` to install.\n\nSearching first tells you the exact name and what the package claims to be. Pacman will not guess at a name for you, so one wrong character in a profile is a build that stops halfway. Five seconds of searching now is the difference later."
+    },
+    {
+      "label": "pacman: searching, installing, removing — task: Now do it the careful way, with a second package. Look at curl before you install it: `pacman -Qi curl` shows its version, its description, which repository it comes from and how big it is. Read it, then install it.",
+      "text": "Now do it the careful way, with a second package. Look at curl before you install it: `pacman -Qi curl` shows its version, its description, which repository it comes from and how big it is. Read it, then install it.\n\nA capital Q with a small i means \"give me information about this package\". It works on a package that is not installed yet, which is exactly when you want it.\n\n`pacman -Qi curl` to read about it, then `pacman -S curl` to install it.\n\nA package name in a profile is a promise about what will be on the image. Reading the description before you install is how you find out whether you are promising the right thing — and whether the thing is really in the official repositories."
+    },
+    {
+      "label": "pacman: searching, installing, removing — task: Now see the whole picture. `pacman -Q` lists every installed package, one name per line. Look at that list, then add one more package to it: `pacman -S vim`.",
+      "text": "Now see the whole picture. `pacman -Q` lists every installed package, one name per line. Look at that list, then add one more package to it: `pacman -S vim`.\n\nA capital Q with nothing after it lists everything. A capital S with a package name after it installs that package.\n\n`pacman -Q` to read the list, then `pacman -S vim`.\n\nThat list is the profile. When an ISO is built, pacman is handed exactly this list and installs each name into a brand new filesystem. On a real machine you would save it into a file and hand that file to the profile — which is why it is worth knowing how to read it."
+    },
+    {
+      "label": "pacman: searching, installing, removing — task: Now take something back off. This machine came with a small set already installed: base, bash and pacman. Remove the base package with `pacman -R base`, then ask pacman about it again with `pacman -Q base`. This time it should fail, and that failure is the confirmation that it is gone.",
+      "text": "Now take something back off. This machine came with a small set already installed: base, bash and pacman. Remove the base package with `pacman -R base`, then ask pacman about it again with `pacman -Q base`. This time it should fail, and that failure is the confirmation that it is gone.\n\nRemoval is a capital R. The capital Q afterwards is the same command that lists installed packages — with a name after it, it asks about that one package only.\n\n`pacman -R base`, then `pacman -Q base`, and read what it says.\n\nAn image is only as good as the list that built it, and knowing how to take things off is how you keep a profile honest. Learning that a package which is gone reports an error rather than silence is how you notice, before a build, that a name in your list is not real. (base is a metapackage — really a list of other packages — so removing it does not take the rest of the system with it.)"
+    },
+    {
+      "label": "pacman: searching, installing, removing — task: Now the update. A full update is `pacman -Syu`: the -Sy part refreshes pacman's copy of the repository lists, and the -u part upgrades everything that is installed. It is a step of its own, not something you bundle into every install. On this machine an update needs a package to act on, so run a full update that brings the longterm kernel in: `pacman -Syu linux-lts`.",
+      "text": "Now the update. A full update is `pacman -Syu`: the -Sy part refreshes pacman's copy of the repository lists, and the -u part upgrades everything that is installed. It is a step of its own, not something you bundle into every install. On this machine an update needs a package to act on, so run a full update that brings the longterm kernel in: `pacman -Syu linux-lts`.\n\nThe three letters go together: -Syu. On a real machine `pacman -Syu` on its own updates everything that is installed. Here you name a package so there is something for it to do.\n\n`pacman -Syu linux-lts`\n\nUpdating refreshes what pacman believes is available, and doing it deliberately, as its own step, is what keeps a build reproducible: you know the repository lists were current before you chose the versions. It is also why a profile pins what it wants instead of trusting whatever is newest on the day."
+    },
+    {
+      "label": "pacman: searching, installing, removing — task: Now meet an error on purpose. Try to install a package that does not exist: type `pacman -S devtool` — the real name has an s on the end. Read what pacman says. It refuses; it will not guess a name for you. Then search for the real one with `pacman -Ss devtools` and install it.",
+      "text": "Now meet an error on purpose. Try to install a package that does not exist: type `pacman -S devtool` — the real name has an s on the end. Read what pacman says. It refuses; it will not guess a name for you. Then search for the real one with `pacman -Ss devtools` and install it.\n\nRead the error carefully: it names the package it could not find. That name is usually one search away from the one you wanted.\n\n`pacman -Ss devtools` to see the real name and version, then `pacman -S devtools`.\n\nThis is the failure you will meet in a real build, and the error message is written for exactly this moment. Read it and it tells you the name pacman wanted, which is almost always the name you nearly typed."
+    },
+    {
+      "label": "pacman: searching, installing, removing — the point",
+      "text": "You now know what pacman does with a list of names: it searches for them, it will tell you what each one actually is, it installs them, it removes them, it refuses names it does not recognise, and it updates itself on its own schedule. That list is your profile. From here on, every name you put in it is an instruction to pacman, not a label."
+    },
+    {
+      "label": "git: the history of your ISO profile — scenario",
+      "text": "Your ISO flavour is not a folder on a desktop. It is a repository — a folder whose every change is recorded, with a name and a reason attached — and the build pipeline builds a commit, not a folder. That one fact changes how you work. You can change anything you like, but until the change is committed, nothing builds it and nothing ships it. This lab is that loop once around: a repository, an identity, a staged file, a commit, a branch, and one change you deliberately leave out."
+    },
+    {
+      "label": "git: the history of your ISO profile — the lesson",
+      "text": "A repository — people shorten it to a repo — is a directory that git watches. Alongside your files, git keeps a hidden folder called .git that holds the whole history: every version of every file, and who changed it and when. A commit is one entry in that history. It is a complete snapshot of your files at a moment in time, with a message saying what changed and why, and the name and email of the person who made it. Two more git words you will need today, and they are the ones people mix up: the working tree is your files as they are on disk right now, with your unsaved-to-history edits in them; staged means you have marked a file with git add as \"this one belongs in my next commit\"; committed means a snapshot that already exists in the history. Here is why any of this matters to an ISO builder: your profile — the recipe that becomes an image — is a repository, and the pipeline builds a commit. It does not build \"whatever happens to be on the disk\". So if you edit the profile and do not commit it, your edit is invisible to the build: the image will be built from the last commit, and your change will not be in it. That is not a flaw in the pipeline, it is the point of one. Builds are supposed to be reproducible, and the only thing about a set of files that is reproducible is a commit with a name on it. Git has a few other words worth knowing even though this lab does not use them: clone means copying somebody else's repository onto your machine, and push means sending your commits to a server so other people can have them. What follows is the local half of that: init, add, commit, log, branch, status."
+    },
+    {
+      "label": "git: the history of your ISO profile — The files in this folder",
+      "text": "There are two of them. profiledef.sh is the start of an ISO profile: it is a plain text file that says what the image is called and which packages belong on it. README.txt is a note about the folder.\n\nBoth of them are yours to change. Git is not going to stop you — that is the whole point of git. It just records what you did."
+    },
+    {
+      "label": "git: the history of your ISO profile — The commands, and what each one is for",
+      "text": "git init — turn this folder into a repository. It adds the hidden .git folder and changes nothing else.\n\ngit config user.name \"...\" and git config user.email \"...\" — tell git who you are. Git records an author on every commit and will not commit without one.\n\ngit add <file> — stage a file: mark it as part of the next commit. git add . stages everything in the folder you are standing in.\n\ngit commit -m \"...\" — record everything that is staged, with a message. The -m flag means \"message\", and the message goes in quotes right after it.\n\ngit log — read the history, newest commit first. git status — ask what is staged and what is not. git branch <name> — make a branch, and in this terminal, move onto it."
+    },
+    {
+      "label": "git: the history of your ISO profile — Why a message matters",
+      "text": "A commit message is not a formality. It is the one sentence that tells whoever reads the history next — including you in six months, and including the pipeline log — what changed and why.\n\nSay what you did and, when it is not obvious, why. \"add the profile stub\" is fine. \"fix\" is not."
+    },
+    {
+      "label": "git: the history of your ISO profile — task: Turn this folder into a repository: `git init`. That creates a hidden .git folder here, and from now on git keeps track of what you change.",
+      "text": "Turn this folder into a repository: `git init`. That creates a hidden .git folder here, and from now on git keeps track of what you change.\n\nThe command is two words: `git init`.\n\n`git init`\n\nEverything else in this lab happens inside a repository. Git will refuse to add, commit, or even tell you the status of a folder that is not one, because there is nowhere for it to put the answer."
+    },
+    {
+      "label": "git: the history of your ISO profile — task: Git stamps every commit with an author, and it needs to know who that is before it will record one. Set your name and your email: `git config user.name \"Your Name\"` and `git config user.email \"you@example.com\"`.",
+      "text": "Git stamps every commit with an author, and it needs to know who that is before it will record one. Set your name and your email: `git config user.name \"Your Name\"` and `git config user.email \"you@example.com\"`.\n\nTwo settings, two commands. The names of the settings are user.name and user.email, and the value goes in quotes after each one.\n\n`git config user.name \"Your Name\"` and `git config user.email \"you@example.com\"`\n\nThe author line is what turns a pile of changes into a history a person can read. It is also how you know which commit — and therefore which ISO — came out of whose work, when a build turns up an image nobody expected."
+    },
+    {
+      "label": "git: the history of your ISO profile — task: Look at the two files here: profiledef.sh is the start of an ISO profile, and README.txt is a note. Stage profiledef.sh with `git add`. Staging means \"this file belongs in my next commit\" — it is not a commit yet.",
+      "text": "Look at the two files here: profiledef.sh is the start of an ISO profile, and README.txt is a note. Stage profiledef.sh with `git add`. Staging means \"this file belongs in my next commit\" — it is not a commit yet.\n\nStaging is `git add` followed by the file name. `git status` will then tell you what is waiting to be committed.\n\n`git add profiledef.sh`\n\nStaging is where you choose what a commit means. It is the difference between \"I edited a file\" and \"this is the change I am recording\", and it is where a careless build gets its wrong contents."
+    },
+    {
+      "label": "git: the history of your ISO profile — task: Now record it: `git commit -m \"your message here\"`. The message is a note to whoever reads the history next, so say what changed and why. Then run `git log` to see your commit sitting in the history.",
+      "text": "Now record it: `git commit -m \"your message here\"`. The message is a note to whoever reads the history next, so say what changed and why. Then run `git log` to see your commit sitting in the history.\n\nThe -m flag means \"message\", and the message goes in quotes right after it. If git says there is nothing to commit, nothing is staged — `git add` the file again.\n\n`git add profiledef.sh`, then `git commit -m \"add the profile stub\"`, then `git log`.\n\nA commit is the unit the build pipeline takes. It has to say what it contains, because the pipeline will be pointed at it by name, and because the next person to change the profile needs to know what they are building on."
+    },
+    {
+      "label": "git: the history of your ISO profile — task: You are about to try something, and you want it separate from the main line of work. Make a branch called feature/my-flavour and move onto it — in this terminal, `git branch feature/my-flavour` does both. Then run `git log` again: your history follows you onto the branch.",
+      "text": "You are about to try something, and you want it separate from the main line of work. Make a branch called feature/my-flavour and move onto it — in this terminal, `git branch feature/my-flavour` does both. Then run `git log` again: your history follows you onto the branch.\n\nA branch is a parallel line of work. `git branch` on its own lists the branches; `git branch <name>` makes one, and here it moves you onto it as well.\n\n`git branch feature/my-flavour`, then `git status` to see where you are.\n\nA branch is how you try something without breaking what already works. It matters for the pipeline too: many pipelines build the main branch, so work on a branch is work that is not shipped until somebody merges it on purpose."
+    },
+    {
+      "label": "git: the history of your ISO profile — task: Now the bit that catches people out. Change one of the two files here — the iso_name line in profiledef.sh is the obvious one; change it to the name of your own ISO — and save it, but do not stage it and do not commit it. Then run `git status` and read what it says about the file.",
+      "text": "Now the bit that catches people out. Change one of the two files here — the iso_name line in profiledef.sh is the obvious one; change it to the name of your own ISO — and save it, but do not stage it and do not commit it. Then run `git status` and read what it says about the file.\n\n`sed -i` edits a file in place, without staging it. Then `cat profiledef.sh` to see your change, and `git status` to see what git makes of it.\n\nAny change will do — change the iso_name line to whatever you want to call your ISO image, and leave it unstaged.\n\nThis is the whole reason the lab exists. The build pipeline builds a commit, so a change that is not committed is not in the commit, and therefore not in the ISO. On a real machine `git status` lists that file under \"Changes not staged for commit\"; this practice terminal only lists what is staged, so what you are looking for is that your file is not among them."
+    },
+    {
+      "label": "git: the history of your ISO profile — the point",
+      "text": "You have a repository with a name and an email attached, a commit with a message that says what it contains, a branch to work on, and a change on your disk that is deliberately not in the history yet. That last one is the point of the whole thing: the pipeline builds a commit, so a change that is not committed is a change that never gets built."
+    },
+    {
+      "label": "Building a package the proper way — scenario",
+      "text": "You want to hand someone a package: a built, installable file for a tiny program called hello, so they can put it on their machine with one command. A package is not a folder of scripts somebody has to run by hand. To make one you need two things — a recipe that says what the program is and how to build it, and a build that produces the same result on your machine and on theirs. This lab is those two things."
+    },
+    {
+      "label": "Building a package the proper way — the lesson",
+      "text": "A package recipe is a shell script called PKGBUILD. It is the same format everywhere: in the official repositories, in the AUR, and in whatever you write yourself. It says what the package is called, which version it is, where the source comes from, and what goes inside the finished package. Nothing about it is magic — pacman, makepkg and the AUR all read the same plain text."
+    },
+    {
+      "label": "Building a package the proper way — What a PKGBUILD is",
+      "text": "A PKGBUILD is a shell script. Not a configuration format, not a special kind of file — a script. makepkg sources it, so every line in it is run by the shell, and the variables it sets are the recipe: pkgname, pkgver, pkgdesc, arch, depends, and so on.\n\nAt the bottom there are usually four functions. prepare() unpacks and patches the source, build() compiles it, check() runs its tests, and package() lays the finished files into the package. That last one is the important one: package() puts files under $pkgdir, and $pkgdir is the directory that becomes / when the package is installed. A recipe never writes to your live system. Ever."
+    },
+    {
+      "label": "Building a package the proper way — Why a clean chroot",
+      "text": "A clean chroot build is a build that happens inside an empty container holding nothing but the build dependencies. That container is a chroot, and the point of it is that nothing of yours leaks in.\n\nIf you build on your own machine, the build inherits every library, header, compiler flag and stray patch you happen to have installed. The result is not a package. It is a snapshot of your desk: it works on a machine shaped like yours, and it breaks on anyone else’s. That is why Arch builds everything in a clean chroot, and why the built file contains only what package() put into $pkgdir."
+    },
+    {
+      "label": "Building a package the proper way — makepkg and pkgctl",
+      "text": "devtools is the toolkit that does this properly. makepkg reads the PKGBUILD in the directory you are standing in, checks that every dependency in depends is installed, fetches and verifies the sources, runs the four functions, and collects the result into a file named name-version-arch.pkg.tar.zst.\n\npkgctl is the current front door to devtools. `pkgctl build` is the one-command version of the clean chroot build — the same work, with the modern door in front of it. It is how Arch packaging is actually driven now, and it is the command you should reach for."
+    },
+    {
+      "label": "Building a package the proper way — task: Give this package a directory of its own. Make a directory called hello in your home and step into it — makepkg only ever reads the PKGBUILD in the directory you are standing in.",
+      "text": "Give this package a directory of its own. Make a directory called hello in your home and step into it — makepkg only ever reads the PKGBUILD in the directory you are standing in.\n\nCheck where you are with `pwd`. The build happens wherever the recipe is, so the recipe needs a directory of its own.\n\nTwo commands: `mkdir hello`, then `cd hello`.\n\nmakepkg builds whatever PKGBUILD sits in the current directory and nowhere else. One package per directory keeps builds from stepping on each other, and it is the same habit that makes a clean chroot build reproducible."
+    },
+    {
+      "label": "Building a package the proper way — task: Write a PKGBUILD for a tiny program called hello. It prints a greeting it fetches over the network, so it needs curl at run time. The recipe needs at least five things: pkgname (hello), pkgver, pkgdesc (one short line saying what it is), arch (any — it runs anywhere), and depends (curl).",
+      "text": "Write a PKGBUILD for a tiny program called hello. It prints a greeting it fetches over the network, so it needs curl at run time. The recipe needs at least five things: pkgname (hello), pkgver, pkgdesc (one short line saying what it is), arch (any — it runs anywhere), and depends (curl).\n\nA PKGBUILD is a shell script of key=value lines. The tidiest way to write one in a single command is printf with a redirect: `printf 'pkgname=hello\\npkgver=1.0.0\\n' > PKGBUILD`.\n\nSomething close to this: pkgname=hello, pkgver=1.0.0, pkgdesc=\"Fetches and prints a greeting\", arch=(any), depends=(curl).\n\nThese five lines are the whole contract between you and pacman. The name and version become the file name. The description is what people read when they search. The architecture says who can install it. And depends is the promise that the package will actually run once it is on a machine."
+    },
+    {
+      "label": "Building a package the proper way — task: Now run makepkg and read what it says. It will refuse to build and name a dependency you do not have. Install that dependency with pacman, and then run makepkg again.",
+      "text": "Now run makepkg and read what it says. It will refuse to build and name a dependency you do not have. Install that dependency with pacman, and then run makepkg again.\n\nThe error says \"Missing dependency ...\". That name is the package you need.\n\n`pacman -S curl` installs it.\n\nmakepkg checks every name in depends before it starts anything. That check is the whole point of depends: pacman refuses to hand out a package whose requirements are not met, so nobody ends up with a broken install."
+    },
+    {
+      "label": "Building a package the proper way — task: Build the package. Run makepkg in the directory that holds the PKGBUILD and watch it finish.",
+      "text": "Build the package. Run makepkg in the directory that holds the PKGBUILD and watch it finish.\n\nmakepkg reads the PKGBUILD in the directory you are standing in. If it says \"PKGBUILD does not exist\", you are in the wrong place.\n\n`cd ~/hello` first, then `makepkg`.\n\nA built package is a single file — hello-1.0.0-any.pkg.tar.zst — that anyone can install with pacman -U, and that contains only what package() put into $pkgdir. That is the difference between a package and a folder of scripts."
+    },
+    {
+      "label": "Building a package the proper way — task: pkgctl is the current front door to devtools: `pkgctl build` is the one-command version of the clean chroot build — the same work makepkg does, through the modern door. There is a second recipe waiting at ~/greeter. Step into it and build it with pkgctl build.",
+      "text": "pkgctl is the current front door to devtools: `pkgctl build` is the one-command version of the clean chroot build — the same work makepkg does, through the modern door. There is a second recipe waiting at ~/greeter. Step into it and build it with pkgctl build.\n\nSame rule as makepkg: the recipe has to be in the directory you are standing in.\n\n`cd ~/greeter`, then `pkgctl build`.\n\npkgctl is the supported way in to devtools now. It wraps the same clean chroot build makepkg does and adds the repository, checkout and signing workflow around it. Learn the front door and the rest of devtools is one flag away."
+    },
+    {
+      "label": "Building a package the proper way — the point",
+      "text": "You wrote a recipe, watched makepkg refuse it for a missing dependency, installed what it needed, and built the package. Then you built a second one through pkgctl, the modern front door to the same toolkit. What you now know is the shape of every Arch package: a shell script that says what the software is, and a build that does not depend on what happens to be installed on your machine."
+    },
+    {
+      "label": "The AUR, and the helpers that build it — scenario",
+      "text": "There is something in the AUR you want — a font, a terminal client, a small tool — and it is not in the official Arch repositories. The AUR is where Arch users put recipes that nobody has audited, and helpers like yay and paru will fetch and build one for you in a single command. This lab is that AUR, those helpers, and the question that decides what ends up on your ISO."
+    },
+    {
+      "label": "The AUR, and the helpers that build it — the lesson",
+      "text": "The AUR — the Arch User Repository — is a pile of build recipes written by users. Not packages exactly: recipes, the PKGBUILD files that describe how to build a package. When you install something from the AUR, your machine downloads the recipe, builds the package from the source it points at, and hands the result to pacman."
+    },
+    {
+      "label": "The AUR, and the helpers that build it — What the AUR is",
+      "text": "The AUR holds user-submitted build recipes. They are not official packages and they are not in Arch’s repositories — pacman -Ss will never show them to you. The official repositories are curated, tested and signed by the project. The AUR is whatever anybody felt like submitting, and the maintainers of those recipes are strangers.\n\nA helper such as yay or paru is a wrapper around the workflow. It fetches the recipe, builds it in a clean chroot, and installs the result. That convenience is the whole point, and it is also the reason the recipe deserves a look before you let it run."
+    },
+    {
+      "label": "The AUR, and the helpers that build it — What \"unsupported\" actually means",
+      "text": "AUR packages are unsupported. That is not a formality. Nobody guarantees the recipe builds, that it still works with current dependencies, or that the source it points at is the source you think it is. The person who wrote the recipe is a stranger with a shell and your user account, and their PKGBUILD is a script that runs as you.\n\nUnsupported does not mean bad. Plenty of AUR packages are excellent, and some of them are better than anything in the repositories. It means the guarantee is missing, and you are the one carrying the risk. The habit that makes that survivable is simple: read the PKGBUILD before you build it. It is a short file. You are looking for the source URL, the depends list, and any install step that reaches outside the package directory."
+    },
+    {
+      "label": "The AUR, and the helpers that build it — Reading the recipe is the step people skip",
+      "text": "When a helper runs, the first thing it does is download the PKGBUILD. That is your chance to look at it — and the recipe is worth reading even when you trust the helper, because the helper will not read it for you. A recipe that installs something into /etc with a curl pipe to a shell is not doing what its description says."
+    },
+    {
+      "label": "The AUR, and the helpers that build it — What a helper does not do",
+      "text": "This is the part that matters for this course. A helper installs onto the machine you are standing on. It does not put anything on your ISO.\n\nAn ISO is assembled from a profile, and the profile lists packages by name — pacman installs those names while the image is being built. If a package is not in the official repositories, the profile cannot ask for it by name, because the image builder has no way to fetch it. So an AUR package has to be built into a package file and served from a local repository that the profile can see. Build it, serve it, list it. Three steps, in that order."
+    },
+    {
+      "label": "The AUR, and the helpers that build it — task: Search the AUR. Run `yay -Ss` (or `paru -Ss`) and look at what comes back. Notice how each result is labelled — it does not say core/ or extra/ the way pacman’s own results do.",
+      "text": "Search the AUR. Run `yay -Ss` (or `paru -Ss`) and look at what comes back. Notice how each result is labelled — it does not say core/ or extra/ the way pacman’s own results do.\n\nThe helper takes pacman’s search flag, but it searches a different place: the AUR, not the repositories.\n\n`yay -Ss` — the results come back prefixed with aur/.\n\nThe AUR is a separate index from the official repositories, and it is worth knowing which one a search is looking at. Everything in it is user-submitted, which is exactly why it deserves a closer look than a package from extra/."
+    },
+    {
+      "label": "The AUR, and the helpers that build it — task: Now ask pacman about the same thing. Search the official repositories for one of the packages you found in the AUR — `pacman -Ss mono`, say — and see what pacman says.",
+      "text": "Now ask pacman about the same thing. Search the official repositories for one of the packages you found in the AUR — `pacman -Ss mono`, say — and see what pacman says.\n\nSame search word, different tool. `pacman -Ss mono` searches the official repositories only.\n\nTry `pacman -Ss mono`, or `pacman -Qi <name>` for a package you saw in the AUR.\n\nThis is the plain meaning of \"unofficial\": the package is not in the repositories, it is not signed by the project, and no maintainer is on the hook for it. It is a recipe somebody wrote, and it is yours to read before you trust it."
+    },
+    {
+      "label": "The AUR, and the helpers that build it — task: Install one of the AUR packages with a helper. Watch the output as it goes: the helper downloads the PKGBUILD first, and that file — not the helper’s promise — is what tells you what you are about to run.",
+      "text": "Install one of the AUR packages with a helper. Watch the output as it goes: the helper downloads the PKGBUILD first, and that file — not the helper’s promise — is what tells you what you are about to run.\n\nThe helper does the whole workflow for you: fetch the recipe, build it in a clean chroot, install the package.\n\n`yay -S ttf-jetbrains-mono` — pick anything you saw in the search.\n\nThe helper turns a pile of shell commands into one. What it does not turn into one is your reading of the recipe it downloaded. The PKGBUILD that came down is the thing to open and read, every time."
+    },
+    {
+      "label": "The AUR, and the helpers that build it — task: One more thing, and it is the one this course is about. A helper installs on this machine. Your ISO does not get it that way — the image only ever gets what its profile lists, and the profile can only ask for packages that live in a repository the image builder can see. Write that down for yourself in a file called aur-to-iso.txt in your home: what has to happen to an AUR package before it can go on an image.",
+      "text": "One more thing, and it is the one this course is about. A helper installs on this machine. Your ISO does not get it that way — the image only ever gets what its profile lists, and the profile can only ask for packages that live in a repository the image builder can see. Write that down for yourself in a file called aur-to-iso.txt in your home: what has to happen to an AUR package before it can go on an image.\n\nTwo steps, in order: first the recipe becomes a package, then that package becomes something the profile can ask for.\n\nWrite something like: \"build it with makepkg, serve the package from a local repo the profile can see, then list it in the profile\".\n\nAn ISO is not a snapshot of the machine you built it on. It is the profile, resolved against repositories, at build time. Anything not in a repository the image builder can see simply is not on the image — no matter how many helpers you ran on your own desktop."
+    },
+    {
+      "label": "The AUR, and the helpers that build it — the point",
+      "text": "You found a recipe in the AUR, confirmed that the official repositories never had it, and let a helper build and install it. None of that makes it trustworthy — it makes it convenient. The AUR is unsupported, and the thing that makes that survivable is reading the recipe before you let it run."
+    },
+    {
+      "label": "Reading a PKGBUILD — scenario",
+      "text": "You are handed a PKGBUILD. Not a toy one — a real recipe, from a project that renamed itself and left a few old names behind. Before you can fix it, or judge it, or write your own, you have to be able to read it: what each variable means, and what a wrong value in it costs you. This is that skill, one variable at a time."
+    },
+    {
+      "label": "Reading a PKGBUILD — the lesson",
+      "text": "A PKGBUILD is a shell script that describes a package: what it is, where it comes from, how it is built, and what goes into it. Every assignment in it is a variable with a job. The functions at the bottom are the steps, in order. Reading a recipe is mostly reading these two things, and this lab walks the whole set of them on one real file."
+    },
+    {
+      "label": "Reading a PKGBUILD — pkgname, and pkgbase",
+      "text": "pkgname is the package’s name — the thing pacman will call it, and the first part of the file that comes out. It is an array when one recipe builds several packages, a split package: a shared library and the tools that go with it, say. When that happens, pkgbase names the recipe itself, so the two can be told apart."
+    },
+    {
+      "label": "Reading a PKGBUILD — pkgver and pkgrel",
+      "text": "pkgver is the upstream version, exactly as the software’s own authors number it: letters, numbers, dots. No hyphens — pacman compares this string to decide what is newer, and the hyphen is its own separator.\n\npkgrel is the packaging release: 1, 2, 3. It resets to 1 whenever pkgver changes, and climbs when only the recipe changed. Version is the software; release is the packaging of it."
+    },
+    {
+      "label": "Reading a PKGBUILD — pkgdesc, arch, url, license",
+      "text": "pkgdesc is one short line saying what the package is. It is what pacman -Ss shows the world, so it is read by people deciding whether to install something.\n\narch says which architectures the package builds for: x86_64, aarch64, or any for the things that run anywhere — scripts, fonts, wallpapers.\n\nurl is the software’s home on the web.\n\nlicense is its licence, from the standard set: GPL, MIT, Apache, and so on, or custom when nothing else fits. It is not decoration. Shipping a package under the wrong licence is a legal problem."
+    },
+    {
+      "label": "Reading a PKGBUILD — depends, makedepends, checkdepends, optdepends",
+      "text": "depends is what must be installed for the package to RUN. Pacman enforces it: if the list is wrong, the package installs and then does not work.\n\nmakedepends is what must be present to BUILD it, and is not needed to run it: compilers, headers, build tools. The difference between depends and makedepends is the difference between the kitchen and the table — the kitchen tools stay in the kitchen.\n\ncheckdepends is what the test suite needs while check() runs.\n\noptdepends is optional extras, each with a few words on what it adds. Pacman suggests these; it never forces them."
+    },
+    {
+      "label": "Reading a PKGBUILD — provides, conflicts, replaces, backup",
+      "text": "provides, conflicts and replaces are the package’s relationships with others: what it can stand in for, what it cannot live alongside, and what it supersedes.\n\nbackup lists the files pacman will not silently overwrite when it upgrades something — usually configuration under /etc. It saves a copy with a .pacnew suffix and lets you merge it yourself."
+    },
+    {
+      "label": "Reading a PKGBUILD — options, install, source, sha256sums, validpgpkeys",
+      "text": "options holds build switches, most of them negations: !strip, !docs, !emptydirs. You mostly meet them when something needs an exception.\n\ninstall names a scriptlet file with instructions pacman runs at install, upgrade and remove time.\n\nsource says where everything comes from: tarball URLs, local files, or a git repository — with the branch or the commit pinned in the source string itself, so the build cannot drift.\n\nsha256sums (or b2sums) is one checksum per source, in the same order, proving the download is the file the recipe was written against. SKIP exists, mainly for git sources — and choosing it is a decision, not a shortcut.\n\nvalidpgpkeys lists the fingerprints allowed to sign the sources, for the projects whose tarballs are signed."
+    },
+    {
+      "label": "Reading a PKGBUILD — The four functions",
+      "text": "prepare() unpacks the source and applies any patches. build() compiles it. check() runs the test suite. package() lays the finished files into the package root — $pkgdir, never the real filesystem.\n\nFor a split package, there is one package() per pkgname, so each output gets its own set of files."
+    },
+    {
+      "label": "Reading a PKGBUILD — task: Find the package’s own name. It is near the top of the file, and one line further down still carries the old name — the install scriptlet line. Put the right file name there: install=<name>.install.",
+      "text": "Find the package’s own name. It is near the top of the file, and one line further down still carries the old name — the install scriptlet line. Put the right file name there: install=<name>.install.\n\npkgname is the first assignment in the file. The scriptlet file has to carry that name.\n\ninstall=greet.install\n\npkgname is not decoration: it becomes the package’s name in pacman’s database, the file name of the built package, and the name every scriptlet, conflict and dependency entry has to agree with."
+    },
+    {
+      "label": "Reading a PKGBUILD — task: Find what the description should say. The pkgdesc line still describes the old package — the one-line description the repositories should show is written in the notes at the top of the file. Put it in the pkgdesc line.",
+      "text": "Find what the description should say. The pkgdesc line still describes the old package — the one-line description the repositories should show is written in the notes at the top of the file. Put it in the pkgdesc line.\n\nScroll to the top. The previous maintainer left the wording in the comment block.\n\npkgdesc=\"A tiny command line tool that prints a friendly greeting\"\n\npkgdesc is what pacman -Ss prints under the package name. It is the only thing a user reads before deciding whether to install something, so it has to describe the software that is actually in the package."
+    },
+    {
+      "label": "Reading a PKGBUILD — task: Find the licence. The licence line claims one thing; the notes at the top of the file say what upstream actually uses. Set the licence array to the truth.",
+      "text": "Find the licence. The licence line claims one thing; the notes at the top of the file say what upstream actually uses. Set the licence array to the truth.\n\nThe previous maintainer wrote the licence down in the notes at the top of the file.\n\nlicense=('MIT')\n\nThe licence tells the people who install the package what they are allowed to do with it. Getting it wrong is not a small mistake, and nobody downstream will catch it for you."
+    },
+    {
+      "label": "Reading a PKGBUILD — task: Find what has to be present to build this but not to run it. One of the names in makedepends belongs in depends instead — it is already there. Take it out of makedepends and leave the build tools alone.",
+      "text": "Find what has to be present to build this but not to run it. One of the names in makedepends belongs in depends instead — it is already there. Take it out of makedepends and leave the build tools alone.\n\nLook for a name that appears in both lists. The one that appears in both is the one that does not belong in makedepends.\n\nmakedepends=('gcc' 'make')\n\nThe difference between depends and makedepends is the difference between the kitchen and the table. Put a runtime library in makedepends and every machine that installs the package carries a build tool it will never use; leave it out of depends and the package installs broken."
+    },
+    {
+      "label": "Reading a PKGBUILD — task: Find the checksum list. Right now the source is a tarball and its checksum is SKIP — which means nobody checked the download. The real sha256 for that tarball is written in the notes at the top of the file. Put it in the list.",
+      "text": "Find the checksum list. Right now the source is a tarball and its checksum is SKIP — which means nobody checked the download. The real sha256 for that tarball is written in the notes at the top of the file. Put it in the list.\n\nThe notes at the top of the file record the sha256 of the upstream tarball, one long line of hex.\n\nsha256sums=('9f2c1e7b4d8a6035c1e2f7a9d4b6c8e0f2a5b7d9c1e3f5a7b9d1c3e5f7a9b1d3')\n\nThe checksum is what proves the file you downloaded is the file the recipe was written against. SKIP is a decision, and for a plain tarball there is no good reason to make it — for git sources, where there is no fixed file to hash, there is."
+    },
+    {
+      "label": "Reading a PKGBUILD — task: Find where the source comes from. The source line still points at the old project’s directory. The tarball for this package lives under https://example.org/greet/ — and the file name has to carry the version, so use $pkgver in the URL.",
+      "text": "Find where the source comes from. The source line still points at the old project’s directory. The tarball for this package lives under https://example.org/greet/ — and the file name has to carry the version, so use $pkgver in the URL.\n\nCompare the source line with the url line. One of them was updated when the project was renamed.\n\nsource=(\"https://example.org/greet/greet-$pkgver.tar.gz\")\n\nThe source line is where the package comes from and the checksum line is what proves it arrived intact. Get the URL wrong and the build fetches somebody else’s file, or nothing at all."
+    },
+    {
+      "label": "Reading a PKGBUILD — task: Find the function that lays the built files into the package. It is doing it wrong: it installs straight into /usr/bin and /etc, which would write to your live system. Everything a package installs has to go under $pkgdir — the directory that becomes / when the package is installed.",
+      "text": "Find the function that lays the built files into the package. It is doing it wrong: it installs straight into /usr/bin and /etc, which would write to your live system. Everything a package installs has to go under $pkgdir — the directory that becomes / when the package is installed.\n\nLook at the two install lines inside package(). The destination is wrong in both of them.\n\ninstall -Dm755 greet \"$pkgdir/usr/bin/greet\" — the destination is under $pkgdir.\n\npackage() never touches your system; it assembles a directory tree that pacman later copies into /. Writing to /usr/bin during a build pollutes the machine you built on and puts files in the package that nobody asked for."
+    },
+    {
+      "label": "Reading a PKGBUILD — task: One step is missing entirely. The notes say the tarball needs patching before it will build — and unpacking and patching is what prepare() is for. Add a prepare() function.",
+      "text": "One step is missing entirely. The notes say the tarball needs patching before it will build — and unpacking and patching is what prepare() is for. Add a prepare() function.\n\nprepare() sits before build() in the order makepkg runs them. Give it a body that unpacks the source.\n\nprepare() {\n  tar -xf \"$pkgname-$pkgver.tar.gz\"\n}\n\nThe four functions run in order: prepare, build, check, package. prepare() is where the source becomes a working tree — unpacked, patched, ready to compile — and skipping it is how a recipe ends up building the wrong thing."
+    },
+    {
+      "label": "Reading a PKGBUILD — the point",
+      "text": "You read a real PKGBUILD and found every stale spot in it: the old name in the scriptlet line, the description that still described the old package, the wrong licence, the runtime dependency hiding in makedepends, the skipped checksum, the source URL pointing at the old project, the install step writing to the real filesystem, and the missing prepare()."
+    },
+    {
+      "label": "Writing a PKGBUILD — scenario",
+      "text": "There is a small program that needs a recipe. Notefile: a tiny command line notepad that appends a line to a note file and can sync the note to a remote server. It has an upstream release, a licence, a tarball and a build system, and none of that means anything to pacman until somebody writes the PKGBUILD that says all of it. That somebody is you."
+    },
+    {
+      "label": "Writing a PKGBUILD — the lesson",
+      "text": "A PKGBUILD is a shell script, and every assignment in it is a variable with a job. Fill them in honestly and the packaging tools can do the rest; leave one of them wrong and the failure is quiet — a package that installs broken, a version that never updates, a licence that is not yours to give. This lab fills in one, variable by variable, and checks each one on its own."
+    },
+    {
+      "label": "Writing a PKGBUILD — The program you are packaging",
+      "text": "Notefile is a tiny command line notepad. It appends a line to a note file, and with -s it syncs the note to a remote server over HTTPS, so it needs curl at run time.\n\nUpstream calls the release 1.4.0 and licenses it MIT. The project page is https://example.org/notefile, and the tarball is https://example.org/notefile/notefile-1.4.0.tar.gz. It builds with make and gcc, its tests want shunit2, and bash is an optional extra that adds tab completion."
+    },
+    {
+      "label": "Writing a PKGBUILD — The variables, in the order you need them",
+      "text": "pkgname is the package’s name; pkgver is the upstream version, exactly as its authors number it — letters, numbers, dots, and no hyphens, because pacman uses the hyphen to separate the version from the packaging release. pkgrel is that packaging release: 1, 2, 3, counting up while only the recipe changes and resetting to 1 whenever pkgver changes.\n\npkgdesc is one short line saying what the package is — the line pacman -Ss shows the world. arch is x86_64, aarch64, or any for things that run anywhere. url is the software’s home on the web. license is its licence, from the standard set: GPL, MIT, Apache, and so on, or custom when nothing else fits."
+    },
+    {
+      "label": "Writing a PKGBUILD — Kitchen and table",
+      "text": "depends is what must be installed for the package to RUN, and pacman enforces it. makedepends is what must be present to BUILD it and is not needed to run it: the compiler, the headers, make. The same name in both lists is a mistake — the kitchen tools stay in the kitchen. checkdepends is what the test suite needs while check() runs, and optdepends is optional extras, each with a few words on what it adds."
+    },
+    {
+      "label": "Writing a PKGBUILD — Sources and checksums",
+      "text": "source says where everything comes from: tarball URLs, local files, or a git repository with the branch or commit pinned in the source string itself. sha256sums holds one checksum per source, in the same order, proving the download is the file the recipe was written against. SKIP exists, mainly for git sources — and choosing it is a decision, not a shortcut."
+    },
+    {
+      "label": "Writing a PKGBUILD — The four functions",
+      "text": "prepare() unpacks the source and applies any patches. build() compiles it. check() runs the tests. package() lays the built files into the package root — $pkgdir, and only $pkgdir. $pkgdir becomes / when the package is installed, so a package() that writes to /usr/bin is not building a package, it is modifying your machine."
+    },
+    {
+      "label": "Writing a PKGBUILD — task: Give the package its name. pkgname is the name pacman will know it by, and the first part of the file that comes out.",
+      "text": "Give the package its name. pkgname is the name pacman will know it by, and the first part of the file that comes out.\n\nIt goes on the line that says pkgname=, in lower case and with no spaces.\n\npkgname=notefile\n\nThe name is how the package is known for its whole life: in pacman’s database, in the built file’s name, and in every dependency entry that refers to it."
+    },
+    {
+      "label": "Writing a PKGBUILD — task: Say which version this is. pkgver is the upstream version — the version the software’s own authors number it — and pkgrel is the packaging release, counting up from 1.",
+      "text": "Say which version this is. pkgver is the upstream version — the version the software’s own authors number it — and pkgrel is the packaging release, counting up from 1.\n\npacman compares pkgver to decide what is newer, so the hyphen is reserved: the version cannot contain one.\n\npkgver=1.4.0 and pkgrel=1 — this is the first packaging of it.\n\nVersion is the software; release is the packaging of it. Get the hyphen rule wrong and pacman compares versions wrongly, and users never receive the update you made."
+    },
+    {
+      "label": "Writing a PKGBUILD — task: Write the description: one short line saying what the package is. This is the line pacman -Ss shows the world.",
+      "text": "Write the description: one short line saying what the package is. This is the line pacman -Ss shows the world.\n\nIt is a single line, in the pkgdesc= assignment, and it should be short enough to read in a search result.\n\npkgdesc=\"A tiny command line notepad that syncs notes to a server\"\n\npkgdesc is the only thing somebody reads before deciding to install something. Vague or missing, and people install the wrong thing or nothing at all."
+    },
+    {
+      "label": "Writing a PKGBUILD — task: Say which architectures this builds for. If the program is a script or a font and does not care about the machine, there is a value for exactly that.",
+      "text": "Say which architectures this builds for. If the program is a script or a font and does not care about the machine, there is a value for exactly that.\n\nThree answers: x86_64, aarch64, and the one for anything that runs everywhere.\n\narch=('any') — a notepad script does not care what the CPU is.\n\narch tells pacman whether a package can be installed on this machine at all. Getting it wrong means either a package nobody can install, or one that gets installed where it cannot run."
+    },
+    {
+      "label": "Writing a PKGBUILD — task: Point at the software’s home on the web.",
+      "text": "Point at the software’s home on the web.\n\nIt goes on the url= line, and it starts with https://.\n\nurl=\"https://example.org/notefile\"\n\nurl is where a person goes to find out what a package is, report a problem, or read the changelog. It is the link that makes the rest of the recipe checkable."
+    },
+    {
+      "label": "Writing a PKGBUILD — task: Record the licence, taken from the standard set. If nothing fits, there is a value for that too.",
+      "text": "Record the licence, taken from the standard set. If nothing fits, there is a value for that too.\n\nIt is an array, like arch and depends: license=(MIT).\n\nlicense=('MIT') — notefile is MIT licensed.\n\nThe licence says what the people who install the package are allowed to do with it. Getting it wrong is a legal problem for you and for everyone downstream."
+    },
+    {
+      "label": "Writing a PKGBUILD — task: List what has to be installed for this package to RUN. Pacman enforces this list, so if you get it wrong the package installs broken.",
+      "text": "List what has to be installed for this package to RUN. Pacman enforces this list, so if you get it wrong the package installs broken.\n\ndepends is an array of package names. Notefile syncs over HTTPS, so one thing belongs here.\n\ndepends=('curl')\n\ndepends is a promise pacman keeps on your behalf: when the package installs, its requirements are already there. Leave a runtime dependency out and the failure lands on the user, not on you."
+    },
+    {
+      "label": "Writing a PKGBUILD — task: List what has to be present to BUILD this package but not to run it: the compiler, the headers, make. The same name must not appear in both lists.",
+      "text": "List what has to be present to BUILD this package but not to run it: the compiler, the headers, make. The same name must not appear in both lists.\n\nmakedepends is the kitchen; depends is the table. A name that appears in both is the mistake.\n\nmakedepends=('gcc' 'make')\n\nThe difference between depends and makedepends is the difference between the kitchen and the table. Put a runtime library in makedepends and every machine that installs the package carries build tools it will never use."
+    },
+    {
+      "label": "Writing a PKGBUILD — task: Say where the source comes from, and give one checksum per source, in the same order. The checksum is what proves the download is the file the recipe was written against.",
+      "text": "Say where the source comes from, and give one checksum per source, in the same order. The checksum is what proves the download is the file the recipe was written against.\n\nsource is an array of URLs; sha256sums is an array of checksums with exactly as many entries as source has.\n\nsource=(\"https://example.org/notefile/notefile-1.4.0.tar.gz\") and one 64-character hex checksum beside it.\n\nThe URL says where the code comes from and the checksum says it is the code you expected. SKIP is a decision — fine for git sources, hard to defend for a plain tarball."
+    },
+    {
+      "label": "Writing a PKGBUILD — task: Write the four functions. prepare() unpacks and patches, build() compiles, check() runs the tests, package() lays the built files into the package root — and the package root is $pkgdir, never the real filesystem.",
+      "text": "Write the four functions. prepare() unpacks and patches, build() compiles, check() runs the tests, package() lays the built files into the package root — and the package root is $pkgdir, never the real filesystem.\n\nThe install line inside package() has to point inside $pkgdir, so that the file lands in the package and not on this machine.\n\ninstall -Dm755 notefile \"$pkgdir/usr/bin/notefile\" — the destination is under $pkgdir.\n\nA package is what package() collects, and nothing else. If package() writes to /usr/bin, the build has modified the machine it ran on and the package is missing the file it promised."
+    },
+    {
+      "label": "Writing a PKGBUILD — task: Put it all together and build it. With every variable filled in and every function present, makepkg turns this PKGBUILD into a package file: notefile-<version>-<arch>.pkg.tar.zst. The terminal under the editor sees the file you are writing — run makepkg there.",
+      "text": "Put it all together and build it. With every variable filled in and every function present, makepkg turns this PKGBUILD into a package file: notefile-<version>-<arch>.pkg.tar.zst. The terminal under the editor sees the file you are writing — run makepkg there.\n\nmakepkg reads the PKGBUILD in the directory you are standing in, checks the depends list, and writes the package file next to it.\n\ncd to the directory holding this PKGBUILD, then makepkg.\n\nThis is the payoff: a recipe that is right in every variable produces a package other people can install with one command, and produces the same package on their machine as on yours."
+    },
+    {
+      "label": "Writing a PKGBUILD — the point",
+      "text": "You wrote a complete PKGBUILD — name, version, release, description, architecture, home page, licence, the two dependency lists kept separate, the source with a checksum beside it, and the four functions with package() filling $pkgdir and nothing else. Every one of those variables is a promise to the person who installs your package."
+    },
+    {
+      "label": "What a profile is made of — scenario",
+      "text": "Every Linux distribution you have ever booted was assembled from a list of files and a list of packages. Arch ships the tool that does this — archiso — and the recipe it reads is called a profile. A profile is not a script and it is not a config file you point at: it is a directory, and that directory *is* the recipe. This lab is about learning to read one."
+    },
+    {
+      "label": "What a profile is made of — the lesson",
+      "text": "archiso takes a profile — a directory — and turns it into a bootable ISO image. Every profile has the same five parts. `profiledef.sh` describes the image itself: its name, its label, where its files sit on the disc, which boot loaders to bake in. `packages.<arch>` lists the packages that go into the image, one per line. `pacman.conf` says where those packages are fetched from. `airootfs/` is a directory of files that get copied onto the image's own root filesystem. And the boot loader directories — `grub/`, `syslinux/`, `efiboot/` — configure the menu you see when the machine starts. Two more variables exist and do not matter yet: `buildmodes` (how to build the thing) and `bootmodes` (which boot loaders to include). Boot modes get their own lab."
+    },
+    {
+      "label": "What a profile is made of — The shape of the directory",
+      "text": "This is the profile you are looking at. Five things, and every one of them has a job:\n\nprofiledef.sh — the identity of the image. Name, label, version, install directory, boot loaders.\n\npackages.x86_64 — the contents. One package per line. Blank lines and lines starting with a # are ignored.\n\npacman.conf — the source. Which mirrors the packages are fetched from while the image is being built.\n\nairootfs/ — the overlay. Everything in here is copied onto the image's root filesystem before the packages are installed.\n\ngrub/ and syslinux/ — the menus. One directory per boot loader."
+    },
+    {
+      "label": "What a profile is made of — Where the filename comes from",
+      "text": "The image is called <iso_name>-<iso_version>-<arch>.iso. The arch part comes from the `arch` variable, which also picks the package list: packages.x86_64. The volume label — the name the disc is given inside a file manager — is a separate thing entirely, and it is `iso_label`."
+    },
+    {
+      "label": "What a profile is made of — task: Open `profiledef.sh`. The image is still called after somebody else's project. Change `iso_name` so the image is named after yours: vesper.",
+      "text": "Open `profiledef.sh`. The image is still called after somebody else's project. Change `iso_name` so the image is named after yours: vesper.\n\nLook in profiledef.sh for the line that starts with `iso_name=`. It is the first assignment in the file.\n\nThe line should read: iso_name=\"vesper\"\n\nThe image filename is built from iso_name, iso_version and the architecture, so iso_name is the half of the filename people recognise. Getting it right means the artefact is named after the flavour rather than after the template it started from — which matters the moment more than one build exists."
+    },
+    {
+      "label": "What a profile is made of — task: Still in `profiledef.sh`: `install_dir` names the directory the image's files live in on the disc. Set it to vesper. Remember the rule — lowercase letters and digits only, nothing else.",
+      "text": "Still in `profiledef.sh`: `install_dir` names the directory the image's files live in on the disc. Set it to vesper. Remember the rule — lowercase letters and digits only, nothing else.\n\nThe rule is not \"no spaces\" — it is stricter. Only [a-z0-9] is allowed.\n\nThe line should read: install_dir=\"vesper\"\n\ninstall_dir is the folder your kernel, initramfs and root filesystem are mounted from on the disc. The boot loaders are told about it at build time by the %INSTALL_DIR% placeholder, so the value and the menus are always in step. The character restriction is not cosmetic: the name ends up in boot parameters and in paths that several different tools have to agree about, and a name with case in it has bitten people on case-insensitive filesystems."
+    },
+    {
+      "label": "What a profile is made of — task: The volume label is a different thing from the filename: it is the name the disc is given inside a file manager, and it is set by `iso_label` in `profiledef.sh`. Set it to VESPER_202611.",
+      "text": "The volume label is a different thing from the filename: it is the name the disc is given inside a file manager, and it is set by `iso_label` in `profiledef.sh`. Set it to VESPER_202611.\n\nThe label and the name are two different variables. You want `iso_label=\"VESPER_202611\"` — all capitals.\n\nThe line should read: iso_label=\"VESPER_202611\"\n\nA volume label is what shows up in a file manager, in a disk utility, and on the boot screen of some machines. It is the first thing that tells somebody which image they have in their hand, and it is limited to uppercase and to 32 characters because of the filesystem it lives in."
+    },
+    {
+      "label": "What a profile is made of — task: The profile does not say which architecture it is for. Add `arch=\"x86_64\"` to `profiledef.sh`. That one value decides which package list is read — the one called `packages.x86_64` — and make sure that list names the kernel.",
+      "text": "The profile does not say which architecture it is for. Add `arch=\"x86_64\"` to `profiledef.sh`. That one value decides which package list is read — the one called `packages.x86_64` — and make sure that list names the kernel.\n\nOne line in profiledef.sh, near the other assignments. And in packages.x86_64, a line that says exactly `linux` — no trailing words, because the whole line is the package name.\n\narch=\"x86_64\" in profiledef.sh, and a line reading `linux` in packages.x86_64.\n\nThe package list is the contents of the image, and the arch variable is how the profile finds it: packages.${arch}. Setting it explicitly means the profile builds the same thing on every machine, instead of producing an aarch64 image because you happened to be on one."
+    },
+    {
+      "label": "What a profile is made of — task: The `airootfs/` directory is the overlay: everything in it is copied onto the image's own root filesystem. It already holds `airootfs/etc/motd` — the message printed the first time somebody logs in. Rewrite it so it greets the person as Vesper.",
+      "text": "The `airootfs/` directory is the overlay: everything in it is copied onto the image's own root filesystem. It already holds `airootfs/etc/motd` — the message printed the first time somebody logs in. Rewrite it so it greets the person as Vesper.\n\nThe path inside the profile is airootfs/etc/motd. On the image it becomes /etc/motd — the overlay keeps the same shape as the root filesystem.\n\nPut a line like \"Welcome to Vesper.\" in airootfs/etc/motd.\n\nThe overlay is how you put your own files into the image without packaging anything. The path you write in the profile is the path the file has on the image, so airootfs/etc/motd becomes /etc/motd. It is the cheapest possible customisation: a file, copied in, that says your name."
+    },
+    {
+      "label": "What a profile is made of — task: Right now the profile does not say where the packages come from. Point it at its own configuration file: add `pacman_conf=\"pacman.conf\"` to `profiledef.sh`.",
+      "text": "Right now the profile does not say where the packages come from. Point it at its own configuration file: add `pacman_conf=\"pacman.conf\"` to `profiledef.sh`.\n\nOne more assignment in profiledef.sh, naming the file that is already there.\n\nThe line should read: pacman_conf=\"pacman.conf\"\n\npacman_conf names the pacman configuration that governs the build. Leaving it out is the single easiest way to get an image that is not reproducible: the build silently inherits the build machine's mirrors. Pointing it at the profile's own file is what makes the recipe mean the same thing everywhere."
+    },
+    {
+      "label": "What a profile is made of — task: Last part: the boot menus. The UEFI menu lives in `grub/grub.cfg`, and the entry in it still calls itself \"Arch Linux\". Rename that menu entry so it says Vesper.",
+      "text": "Last part: the boot menus. The UEFI menu lives in `grub/grub.cfg`, and the entry in it still calls itself \"Arch Linux\". Rename that menu entry so it says Vesper.\n\nFind the word menuentry in grub/grub.cfg. The name of the image is the text in double quotes right after it.\n\nSomething like: menuentry \"Vesper Linux (%ARCH%, ${archiso_platform})\" — keep the rest of the line exactly as it is.\n\nThe bootloader configuration is the last part of the profile, and it is the part a user actually sees. grub/ serves UEFI machines and syslinux/ serves BIOS machines; each is a directory of plain configuration files. A profile that names a boot mode has to have the matching directory, and the menu entries in it are the same template mechanism everywhere: %INSTALL_DIR% and friends are filled in at build time."
+    },
+    {
+      "label": "What a profile is made of — the point",
+      "text": "You have read a profile the way an archiso maintainer reads one: five parts, each with one job. Everything else in this course hangs off that shape — the package list, the overlay and the boot menus are each one of those five parts seen from a different side."
+    },
+    {
+      "label": "Packages and pacman configuration — scenario",
+      "text": "A profile with the right shape still builds the wrong image if the package list is wrong or the mirrors are wrong. And the failure is quiet: the build succeeds, the ISO boots, and six months later somebody asks why their machine pulled its packages from a mirror the project never chose. This lab is about the two files that decide what is inside the image and where it came from."
+    },
+    {
+      "label": "Packages and pacman configuration — the lesson",
+      "text": "The file `packages.x86_64` is a pacman list — one package per line, exactly the kind of list you would hand to `pacman -S`. A line starting with # is a comment and is ignored, and so are blank lines. Two packages are not optional: `mkinitcpio`, which builds the initramfs, and `mkinitcpio-archiso`, which teaches that initramfs how to find the root filesystem on the disc. Without the second one you have no bootable image, whatever else is right.\n\nThe pacman configuration decides where those packages come from. Here is the part that catches everybody: there are TWO pacman configurations, and they are different files. The profile's `pacman.conf` governs the BUILD — mkarchiso reads it and pacstrap uses it to fill the image. The file at `airootfs/etc/pacman.conf` is the one inside the RUNNING IMAGE — it is what pacman reads once somebody boots your ISO and installs something. They can point at different mirrors, and if they do, the image you tested is not the image people get."
+    },
+    {
+      "label": "Packages and pacman configuration — The rule about relative Include",
+      "text": "pacman resolves a relative `Include` against the directory you are standing in when you run it — not against the directory the file containing the Include lives in. So a profile whose pacman.conf says `Include = mirrorlist` builds happily if you happen to be standing in a directory that has a mirrorlist in it, and fails if you are not. A profile must not depend on the directory somebody happened to be in, so the servers are written out in full."
+    },
+    {
+      "label": "Packages and pacman configuration — What the two configurations are for",
+      "text": "Build time: the profile's pacman.conf. This decides which mirror your packages are downloaded from while the image is assembled.\n\nRun time: airootfs/etc/pacman.conf. This decides which mirror the running image fetches from later, when somebody installs a package inside it.\n\nThe build one is a file in your profile. The runtime one is a file you drop into the overlay, and it is the overlay that puts it inside the image."
+    },
+    {
+      "label": "Packages and pacman configuration — task: Add `nano` to the package list. The list is a pacman list: one package per line, and the line is nothing but the package name.",
+      "text": "Add `nano` to the package list. The list is a pacman list: one package per line, and the line is nothing but the package name.\n\nLook at the shape of the other entries. A package is a line containing just the name.\n\nAdd a line reading exactly: nano\n\nThe package list is the contents of the image, and it is handed to pacman almost verbatim. That is why the format is strict: one name per line, nothing else. A trailing comment on the same line is not a comment to pacman — it is part of the name."
+    },
+    {
+      "label": "Packages and pacman configuration — task: Take `vim` out of the image. This time, remove the line entirely rather than commenting it out.",
+      "text": "Take `vim` out of the image. This time, remove the line entirely rather than commenting it out.\n\nFind the line that says vim and delete it, rather than putting a # in front.\n\nThe line \"vim\" should be gone from the file entirely.\n\nCommenting a package out and deleting it have the same effect on the build — both stop it being installed — but they mean different things to the next person who reads the profile. A deleted line says \"we do not want this\". A commented line says \"we had this once\"."
+    },
+    {
+      "label": "Packages and pacman configuration — task: Now do it the other way round: keep `tree` in the file, but stop it being installed. Put a `#` in front of the line.",
+      "text": "Now do it the other way round: keep `tree` in the file, but stop it being installed. Put a `#` in front of the line.\n\nThe # goes at the very start of the line, before the package name.\n\nThe line should read: #tree\n\nA # at the start of a line turns a package into a comment. Archiso skips comment lines and blank lines, so the package is not installed — which is how you keep a note about a package you tried without carrying it into every build."
+    },
+    {
+      "label": "Packages and pacman configuration — task: Two packages in this list are not optional. `mkinitcpio` is here; `mkinitcpio-archiso` is missing. Add it, because without it the image does not boot.",
+      "text": "Two packages in this list are not optional. `mkinitcpio` is here; `mkinitcpio-archiso` is missing. Add it, because without it the image does not boot.\n\nIt goes in the list like any other package. Its name has a hyphen in it.\n\nAdd a line reading exactly: mkinitcpio-archiso\n\nmkinitcpio builds the initramfs — the small filesystem the kernel unpacks into before the real root filesystem is available. mkinitcpio-archiso is the archiso-specific part of that: it knows about the medium. Its absence is the classic archiso failure, and it is quiet — the image builds fine and fails at boot."
+    },
+    {
+      "label": "Packages and pacman configuration — task: In the build's `pacman.conf`, the signature policy is commented out. Write it out: `SigLevel = Required DatabaseOptional`.",
+      "text": "In the build's `pacman.conf`, the signature policy is commented out. Write it out: `SigLevel = Required DatabaseOptional`.\n\nFind the line in pacman.conf that starts with #SigLevel and take the # off.\n\nThe line should read: SigLevel = Required DatabaseOptional\n\nSigLevel tells pacman how much signature checking to do. Required means a package must be signed by a key in the trusted keyring; DatabaseOptional means the repository databases may be unsigned. Writing the policy out in the profile means the build behaves the same way on every machine, instead of depending on what the build host happens to have configured."
+    },
+    {
+      "label": "Packages and pacman configuration — task: The build's `pacman.conf` pulls its servers in with `Include = mirrorlist`. That does not work in a profile: pacman resolves a relative Include against the directory you are standing in, not the directory the file lives in. So the same profile builds from one directory and fails from another. Write the servers out in full instead — a `Server = https://…` line under [core] and one under [extra].",
+      "text": "The build's `pacman.conf` pulls its servers in with `Include = mirrorlist`. That does not work in a profile: pacman resolves a relative Include against the directory you are standing in, not the directory the file lives in. So the same profile builds from one directory and fails from another. Write the servers out in full instead — a `Server = https://…` line under [core] and one under [extra].\n\nDelete the Include lines and put a Server line under each repository heading. The $repo and $arch in the URL are variables pacman fills in.\n\nUnder [core]: Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch — and the same under [extra].\n\nA relative Include makes the profile depend on where it is being built from. The same profile that built on a machine with a mirrorlist in its working directory fails on the next machine, and the error is about a missing file rather than about the profile, which is a miserable thing to debug. Writing the servers out in full makes the profile hermetic: it says where it wants to fetch from, and it says the same thing wherever the build runs."
+    },
+    {
+      "label": "Packages and pacman configuration — task: The running image has its own pacman configuration, at `airootfs/etc/pacman.conf`, and right now it names a different mirror from the build. Make it name the same mirror the build uses — copy the Server lines from `pacman.conf` into it.",
+      "text": "The running image has its own pacman configuration, at `airootfs/etc/pacman.conf`, and right now it names a different mirror from the build. Make it name the same mirror the build uses — copy the Server lines from `pacman.conf` into it.\n\nOpen both files side by side. Copy the Server lines from the build's pacman.conf into the image's pacman.conf.\n\nThe runtime file should end up with the same Server = https://… lines under [core] and [extra] as the build file has.\n\nThe build configuration and the runtime configuration answer two different questions — where do the image's own packages come from, and where do packages installed later come from — but if they disagree, the image is split-brained: it was assembled from one mirror and configured to pull from another. That is how a project ends up shipping a build it never tested, and how a mirror gets traffic nobody asked it to have."
+    },
+    {
+      "label": "Packages and pacman configuration — the point",
+      "text": "You now know where an image gets its contents and where it gets its sources — and that there are two of each, not one. The package list is a pacman list, comments are how you talk to the next person, mkinitcpio-archiso is not optional, and a profile that inherits its mirrors from the directory it was built in is not a profile anybody can reproduce."
+    },
+    {
+      "label": "The airootfs overlay — scenario",
+      "text": "You want the image to greet people by name, to ship a script of your own, and to have a password file nobody else can read. None of that needs a package. All of it is one directory: airootfs/. This is the cheapest customisation archiso offers, and it comes with three rules that are worth learning properly the first time rather than the third time."
+    },
+    {
+      "label": "The airootfs overlay — the lesson",
+      "text": "`airootfs/` is an overlay. The whole directory is copied onto the image's root filesystem, and the path inside the overlay is the path on the image — airootfs/etc/motd becomes /etc/motd.\n\nThe copying happens BEFORE the packages are installed. That single fact explains three things. First, you can drop any file you like onto the image without packaging anything. Second, the copy does not carry permissions or ownership: everything arrives as mode 644, owned by root — so a script you drop in cannot be run, and the only way to give it an executable bit is the `file_permissions` array in profiledef.sh. Third, a file that a package also owns gets replaced by that package, because the package is installed afterwards and wins. There are exceptions — /etc/pacman.conf is one of them — and the exception is that pacman treats it as a backup file: it leaves your copy alone and puts the packaged one beside it as /etc/pacman.conf.pacnew."
+    },
+    {
+      "label": "The airootfs overlay — Why the copy is not a copy",
+      "text": "archiso copies the overlay into the work directory and then installs the packages on top of it. It does not preserve what your files looked like on your disk: modes are reset to 644 for files and 755 for directories, and everything is owned by root.\n\nSo if you want a file with a different owner or mode, you cannot do it by setting it in your working directory. You list it in profiledef.sh under file_permissions, as an associative array of path to owner UID, owner GID and mode: [\"/etc/shadow\"]=\"0:0:400\"."
+    },
+    {
+      "label": "The airootfs overlay — Which files the packages take back",
+      "text": "If you drop a file at a path that a package also owns, the package wins — it is installed after your copy, and it overwrites it.\n\nSome files are exempt. A package can declare a file a backup file, and pacman then refuses to overwrite a version that is already on disk; it puts the packaged version alongside it with a .pacnew suffix. /etc/pacman.conf is one of these, which is exactly why a profile can carry its own pacman configuration in the overlay."
+    },
+    {
+      "label": "The airootfs overlay — task: Put a file of your own on the image. Write `airootfs/etc/vesper-release` so that it says something like `vesper 2026.11.10` — a release file, so somebody inside the running system can tell what they booted.",
+      "text": "Put a file of your own on the image. Write `airootfs/etc/vesper-release` so that it says something like `vesper 2026.11.10` — a release file, so somebody inside the running system can tell what they booted.\n\nThe file is open above, empty. Type into it. The path in the profile is airootfs/etc/vesper-release; on the image it is /etc/vesper-release.\n\nA single line such as: vesper 2026.11.10\n\nThis is the overlay doing the one thing it is best at: putting a file of yours on the image without packaging anything. The path inside the overlay is the path on the image, so the directory structure you see in the profile is the directory structure of the finished system."
+    },
+    {
+      "label": "The airootfs overlay — task: The message a user reads the first time they log in is `/etc/motd`. Yours still says \"Welcome to the image\". Rewrite `airootfs/etc/motd` so it welcomes them to Vesper.",
+      "text": "The message a user reads the first time they log in is `/etc/motd`. Yours still says \"Welcome to the image\". Rewrite `airootfs/etc/motd` so it welcomes them to Vesper.\n\nChange the first line so it says Welcome to Vesper.\n\nSomething like: Welcome to Vesper — a live image of your own making.\n\nThe motd is the cheapest personality a distribution has. It costs one file in the overlay, it survives every rebuild, and it is the difference between an image that looks like Arch and an image that looks like yours."
+    },
+    {
+      "label": "The airootfs overlay — task: Write a script. It belongs at `airootfs/usr/local/bin/hello`, so on the image it will be /usr/local/bin/hello. It needs a shebang line — the first line of the file, saying which shell runs it — and it should print a greeting that mentions Vesper.",
+      "text": "Write a script. It belongs at `airootfs/usr/local/bin/hello`, so on the image it will be /usr/local/bin/hello. It needs a shebang line — the first line of the file, saying which shell runs it — and it should print a greeting that mentions Vesper.\n\nThe first line of the file starts with #! and names a shell. The rest is ordinary shell.\n\nSomething like: #!/usr/bin/env bash — then an echo line that mentions Vesper.\n\nA shebang is not a comment. It is the kernel's instruction sheet: the first two bytes of an executable tell the kernel which program to hand the file to. It is the one line that turns a text file into a program, and nothing else in the file substitutes for it."
+    },
+    {
+      "label": "The airootfs overlay — task: The script is still not runnable, and the overlay cannot fix that by itself: files copied out of airootfs/ arrive as 644 — readable, not executable. Give it the executable bit in `profiledef.sh`, under `file_permissions`. It should end up as 755.",
+      "text": "The script is still not runnable, and the overlay cannot fix that by itself: files copied out of airootfs/ arrive as 644 — readable, not executable. Give it the executable bit in `profiledef.sh`, under `file_permissions`. It should end up as 755.\n\nLook at the file_permissions array in profiledef.sh. It is an associative array: a path in square brackets, then the mode after an equals sign.\n\nInside file_permissions=( ... ), add: [\"/usr/local/bin/hello\"]=\"0:0:755\"\n\nThe overlay copy deliberately throws away ownership and permissions — files become 644 and directories 755, all owned by root — because a profile is usually a git checkout, and git does not carry those things between machines. The consequence is that a script in the overlay cannot be run until file_permissions says so. The three fields are owner UID, owner GID and mode; 0:0 is root:root, and 755 is the usual mode for something everybody may run."
+    },
+    {
+      "label": "The airootfs overlay — task: The same mechanism, for a file that must not be world-readable. `/etc/shadow` holds the hashed passwords. List it in `file_permissions` in `profiledef.sh` with the mode 400.",
+      "text": "The same mechanism, for a file that must not be world-readable. `/etc/shadow` holds the hashed passwords. List it in `file_permissions` in `profiledef.sh` with the mode 400.\n\nSame array, same shape as the one you just added. The path is /etc/shadow and the mode is 400.\n\nAdd: [\"/etc/shadow\"]=\"0:0:400\"\n\n644 on a password file means every account on the system can read the hashes, which is exactly what you do not want. 400 is the mode for root-only-and-readable. Setting it here means it is right on every build, including the ones somebody else runs from their own checkout of your profile."
+    },
+    {
+      "label": "The airootfs overlay — task: One more overlay file. Write `airootfs/etc/pacman.conf` — the pacman configuration for the RUNNING image — with a first line that reads `# Vesper runtime pacman config`, and a `[core]` section underneath with a `Server = https://…` line naming your mirror.",
+      "text": "One more overlay file. Write `airootfs/etc/pacman.conf` — the pacman configuration for the RUNNING image — with a first line that reads `# Vesper runtime pacman config`, and a `[core]` section underneath with a `Server = https://…` line naming your mirror.\n\nThe file is open above and empty. A comment starts with a #. Under [core], a Server line gives the mirror.\n\nSomething like: # Vesper runtime pacman config — then [core] and a Server = https://… line.\n\nYou might expect the pacman package to overwrite this file, because the package is installed after your copy is laid down — and for most files it does. /etc/pacman.conf is one of the exceptions: pacman declares it a backup file, so when a version is already on disk it leaves yours alone and puts the packaged one next to it as /etc/pacman.conf.pacnew. That is why a profile can carry its own runtime configuration, and it is also why the leftover .pacnew file is worth opening and reading rather than deleting."
+    },
+    {
+      "label": "The airootfs overlay — the point",
+      "text": "You have used the overlay for what it is good at — putting your own files on the image — and you have learned its two sharp edges. Permissions do not come with the copy; they come from file_permissions in profiledef.sh. And the packages are installed after your files, so a file they own is theirs unless it is a backup file."
+    },
+    {
+      "label": "Boot loaders and boot modes — scenario",
+      "text": "The image builds. It boots on your laptop. It does not boot on the machine in the cupboard with the old firmware, and you have no idea why. The answer is usually two words long, and they are written in `profiledef.sh`: bootmodes. This lab is about that array, and about the menus it points at."
+    },
+    {
+      "label": "Boot loaders and boot modes — the lesson",
+      "text": "A boot loader is the program that the firmware hands control to. There are two ways a PC starts up, and they are genuinely different machines: BIOS — the old firmware, booted through a small bootloader called syslinux — and UEFI — the newer firmware, booted through GRUB or systemd-boot. A profile says which of them to bake into the image with the `bootmodes` array in profiledef.sh. Two values matter here: `bios.syslinux` for BIOS machines, and `uefi.grub` for UEFI ones. Each needs its own directory of configuration: `syslinux/` and `grub/`.\n\nThe menu entries are templates. `%INSTALL_DIR%`, `%ARCH%` and `%ARCHISO_UUID%` are placeholders that mkarchiso fills in when the image is built: the install directory, the target architecture, and the volume id of the ISO — which the initramfs uses to find the medium it booted from. That is why the same configuration file works for every build: nothing in it is hard-coded, and the same is true of the syslinux side, which uses the same placeholders in the same way.\n\nOne difference worth holding on to: in syslinux the kernel parameters live on the APPEND line; in grub they live on the `linux` line. Same parameters, different spelling."
+    },
+    {
+      "label": "Boot loaders and boot modes — The two machines",
+      "text": "BIOS: the firmware that loads a bootloader from the first megabytes of the disc. Small, simple, and still what a lot of older machines do. archiso serves it with syslinux, whose configuration lives in the profile's syslinux/ directory.\n\nUEFI: the newer firmware, which loads a bootloader from an EFI system partition. archiso serves it with grub, whose configuration lives in the profile's grub/ directory.\n\nAn image can carry both. It cannot carry one and boot on the other, which is why bootmodes is a list and not a single value."
+    },
+    {
+      "label": "Boot loaders and boot modes — Kernel parameters",
+      "text": "The kernel takes instructions on its command line: which console to use, whether to use the graphics driver, and so on. In grub they go on the line that starts with `linux`. In syslinux they go on the line that starts with APPEND. The same parameter, spelled in the place each bootloader expects."
+    },
+    {
+      "label": "Boot loaders and boot modes — task: In `profiledef.sh`, the `bootmodes` array lists only `uefi.grub`. Add `bios.syslinux` so the image also boots on a BIOS/CSM machine.",
+      "text": "In `profiledef.sh`, the `bootmodes` array lists only `uefi.grub`. Add `bios.syslinux` so the image also boots on a BIOS/CSM machine.\n\nbootmodes is an array in profiledef.sh, one quoted string per entry. There is a line break between the two entries.\n\nIt should look like: bootmodes=('bios.syslinux'\n           'uefi.grub')\n\nThe firmware decides which bootloader it looks for; the profile decides which ones are present on the disc. A UEFI machine reads the EFI system partition and finds grub; a BIOS machine reads the boot sector and finds syslinux. A profile that names only one of them builds an image that silently does nothing on the other kind of machine — and \"it boots on mine\" is exactly how that mistake survives a release."
+    },
+    {
+      "label": "Boot loaders and boot modes — task: Look at the grub menu entry in `grub/grub.cfg`. It loads the kernel and then the initramfs — the small filesystem the kernel unpacks into before it can mount the image. The initrd line names a file that does not exist. Fix it: the initramfs in the image is called `initramfs-linux.img`.",
+      "text": "Look at the grub menu entry in `grub/grub.cfg`. It loads the kernel and then the initramfs — the small filesystem the kernel unpacks into before it can mount the image. The initrd line names a file that does not exist. Fix it: the initramfs in the image is called `initramfs-linux.img`.\n\nThe entry has two lines that load files: one starting with linux, one starting with initrd. The initrd line names initramfs.img; the file in the image is called initramfs-linux.img.\n\nThe line should read: initrd /%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img\n\nThe kernel can only mount a root filesystem by way of the initramfs, and the initramfs is only useful if grub hands it over. Boot loaders do not search: they are told a path and they load what is there. A wrong name here gives you a black screen, which is the least informative failure mode there is."
+    },
+    {
+      "label": "Boot loaders and boot modes — task: Add a second grub menu entry, for machines whose screen comes up black because the graphics driver misbehaves. Give it a title that contains the word \"safe\", and have it load the same kernel — using the %INSTALL_DIR% placeholder, not a path you typed in yourself.",
+      "text": "Add a second grub menu entry, for machines whose screen comes up black because the graphics driver misbehaves. Give it a title that contains the word \"safe\", and have it load the same kernel — using the %INSTALL_DIR% placeholder, not a path you typed in yourself.\n\nCopy the existing entry, change its title to something like \"Vesper Linux (safe graphics)\", and change the kernel parameters on the linux line.\n\nA new block like: menuentry \"Vesper Linux (safe graphics)\" --id 'vesper-safe' { linux /%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux … }\n\nA second entry is a second set of kernel parameters on the same kernel. This is how a distribution offers a fallback for a machine whose video card does not work — and it is only worth having if the path is written with the placeholders, because the path is only correct for one build."
+    },
+    {
+      "label": "Boot loaders and boot modes — task: The entry whose title contains \"safe\" also has to carry `%ARCHISO_UUID%`. It is not a typo and it is not a placeholder for you to fill in: mkarchiso replaces it at build time with the volume id of the finished ISO, which is how the initramfs finds the medium it was booted from.",
+      "text": "The entry whose title contains \"safe\" also has to carry `%ARCHISO_UUID%`. It is not a typo and it is not a placeholder for you to fill in: mkarchiso replaces it at build time with the volume id of the finished ISO, which is how the initramfs finds the medium it was booted from.\n\nLook at the linux line of the first grub entry. It ends with archisosearchuuid=%ARCHISO_UUID%. Your new entry needs the same thing.\n\nThe linux line should end with something like: archisobasedir=%INSTALL_DIR% archisosearchuuid=%ARCHISO_UUID%\n\nThe initramfs has to find the root filesystem on the disc, and the disc has a unique volume id. The bootloader does not know it, so it cannot be written into the configuration at the time you wrote the configuration — it is filled in when the image is built. That is the whole trick behind these placeholders: one file, correct for every build."
+    },
+    {
+      "label": "Boot loaders and boot modes — task: The grub menu waits 15 seconds before it boots the default entry. Change it to 5 seconds, in `grub/grub.cfg`.",
+      "text": "The grub menu waits 15 seconds before it boots the default entry. Change it to 5 seconds, in `grub/grub.cfg`.\n\nNear the top of grub/grub.cfg, next to the default= line, there is a timeout= line.\n\nThe line should read: timeout=5\n\nThe timeout is the difference between an image that feels quick and one that feels broken. It is set per bootloader, because each has its own menu, and a profile that carries both boot loaders should keep both timeouts in step — a mismatch is a small thing that makes a distribution feel unfinished."
+    },
+    {
+      "label": "Boot loaders and boot modes — task: Now the BIOS side. `syslinux/syslinux.cfg` has no entry in it at all. Write the one that matches the grub menu: a LABEL, a LINUX line pointing at /%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux, an INITRD line pointing at /%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img, and an APPEND line carrying `archisobasedir=%INSTALL_DIR%` and `archisosearchuuid=%ARCHISO_UUID%`.",
+      "text": "Now the BIOS side. `syslinux/syslinux.cfg` has no entry in it at all. Write the one that matches the grub menu: a LABEL, a LINUX line pointing at /%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux, an INITRD line pointing at /%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img, and an APPEND line carrying `archisobasedir=%INSTALL_DIR%` and `archisosearchuuid=%ARCHISO_UUID%`.\n\nSyslinux entries are four lines: LABEL, MENU LABEL, LINUX, INITRD, APPEND. The LINUX and INITRD paths are the same ones the grub entry uses.\n\nSomething like:\nLABEL vesper\n  MENU LABEL Vesper Linux (%ARCH%, BIOS)\n  LINUX /%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux\n  INITRD /%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img\n  APPEND archisobasedir=%INSTALL_DIR% archisosearchuuid=%ARCHISO_UUID%\n\nThe two menus are the same boot in two dialects. The paths are identical, and so are the placeholders: %INSTALL_DIR%, %ARCH% and %ARCHISO_UUID% mean exactly the same thing on both sides, and mkarchiso fills all three in at build time. A profile that gets these two out of step produces an image that boots on a UEFI laptop and not on the BIOS machine beside it."
+    },
+    {
+      "label": "Boot loaders and boot modes — task: Last one, and it is the difference between the two dialects. Add the kernel parameter `nomodeset` to BOTH menus: in grub it goes on the line starting with `linux`, in syslinux it goes on the APPEND line.",
+      "text": "Last one, and it is the difference between the two dialects. Add the kernel parameter `nomodeset` to BOTH menus: in grub it goes on the line starting with `linux`, in syslinux it goes on the APPEND line.\n\nTwo different lines in two different files. Grub: the line starting with linux. Syslinux: the line starting with APPEND.\n\nIn grub/grub.cfg, the linux line ends with something like: archisosearchuuid=%ARCHISO_UUID% nomodeset. In syslinux/syslinux.cfg, the APPEND line ends with something like: archisosearchuuid=%ARCHISO_UUID% nomodeset\n\nKernel parameters are instructions to the kernel, and each bootloader has its own place for them: the command line in grub, the APPEND line in syslinux. They are the same instructions in two spellings, which is why a parameter that works on one machine has to be added in two places for the other one to behave the same way."
+    },
+    {
+      "label": "Boot loaders and boot modes — the point",
+      "text": "You now know how a profile claims a machine. `bootmodes` says which boot loaders go on the disc, each with its own directory of configuration, and both menus are written in templates that mkarchiso fills in at build time. The BIOS and UEFI paths are the same boot in two dialects — same placeholders, different spelling for the kernel parameters."
+    },
+    {
+      "label": "Building with mkarchiso — scenario",
+      "text": "A profile is a folder of intentions. It has a name, a package list, a boot menu and a pile of opinions about permissions. None of it is an operating system yet. This is the step where the folder becomes a file you can put in a virtual machine and watch boot."
+    },
+    {
+      "label": "Building with mkarchiso — the lesson",
+      "text": "`mkarchiso` is the tool that turns a profile directory into an ISO image. You point it at the profile, give it a working directory and an output directory, and it does the rest: it installs your package list into a fresh root filesystem, builds an initramfs, sets up the boot loaders you asked for, compresses the root filesystem, and writes the ISO. The command looks like this: `./archiso/mkarchiso -w work -o out profile`. `-w work` is the working directory — a scratch area mkarchiso owns and fills with a root filesystem, a boot directory and the ISO tree. `-o out` is where the finished `.iso` file lands. `profile` is the directory holding your `profiledef.sh` and `packages.x86_64`. There are three build modes: `iso`, a bootable optical image and the default; `bootstrap`, a compressed tarball of a minimal system for building a system from scratch; and `netboot`, the artifacts a machine fetches over the network to boot. You choose them with `-m iso` or `-m 'bootstrap netboot'`. One more thing matters as much as any of these: the build does not run on your laptop. It runs on a runner in your own GitLab instance, cut by GitLab CI/CD, and the ISO is published as a release download in your own repository. And the pipeline builds a commit — one specific point in your history. Changes you have not committed have never been built, and never will be."
+    },
+    {
+      "label": "Building with mkarchiso — What happens to your commit",
+      "text": "The pipeline does four things, in this order.\n\nIt checks out one commit of your profile repository. Not your working tree — a commit. If you have edited files and not committed them, the build used the old version, and the image you get back is the image of the old version.\n\nIt runs `mkarchiso -w work -o out profile` on a runner, inside an Arch container.\n\nIt boots the ISO under QEMU with the serial console as the only output, and looks for a login prompt. An image that does not boot is not a release.\n\nIt uploads the ISO as a release asset, so you can download the exact file that was tested."
+    },
+    {
+      "label": "Building with mkarchiso — The three build modes",
+      "text": "`iso` — a bootable ISO 9660 image you can write to a disc or a USB stick. This is what you want, and it is the default when you do not ask for anything else.\n\n`bootstrap` — a compressed tarball holding a minimal system, the kind of thing you unpack onto a disk to bootstrap an installation. It uses `bootstrap_packages.<arch>` instead of `packages.<arch>`.\n\n`netboot` — the artifacts a machine fetches over the network to boot, for a machine with no local disc.\n\nYou can ask for more than one in a single run: `-m 'iso bootstrap'`. Each mode gets its own output file, and the file names say which is which."
+    },
+    {
+      "label": "Building with mkarchiso — Reading the log",
+      "text": "The log is the build talking to you. Every line mkarchiso prints starts with `[mkarchiso] INFO:` — those are the steps it is taking. The lines without that prefix come from the other tools it runs, like `pacstrap` and `mksquashfs`.\n\nThe order of the steps tells you where a failure happened. If the log stops after \"Installing packages to\", the problem is in your package list or your pacman configuration. If it stops after \"Creating SquashFS image\", the problem is in the root filesystem options. The last thing the log says before it stops is usually the step that broke."
+    },
+    {
+      "label": "Building with mkarchiso — task: Run the build and let it finish. A build has to produce an ISO file.",
+      "text": "Run the build and let it finish. A build has to produce an ISO file.\n\nThe build panel is below the task list. The build button there queues the job on a runner.\n\nWhen the build finishes the log ends with the size of the image and the URL of the release download.\n\nThe build is the point of the whole course so far. Everything up to here was a description of an image; this is the file. Its name is `<iso_name>-<iso_version>-<arch>.iso`, so the name tells you which profile and which commit produced it."
+    },
+    {
+      "label": "Building with mkarchiso — task: Check the image's volume label. It should be VESPER_202611.",
+      "text": "Check the image's volume label. It should be VESPER_202611.\n\nThe label is one of the strings near the top of profiledef.sh.\n\nLook for the line `iso_label=`. It is usually built from the name and the build date, like `VESPER_$(date ... +%Y%m)`.\n\nThe ISO 9660 volume label is the name of the filesystem on the disc. GRUB finds the medium by searching for that label, so it has to be unique and it has to be the one your profile declares. If two of your images share a label, the bootloader may find the wrong one."
+    },
+    {
+      "label": "Building with mkarchiso — task: The image has to carry the package you added to the package list: nano.",
+      "text": "The image has to carry the package you added to the package list: nano.\n\nThe package list is `packages.x86_64` in the profile — one package name per line.\n\nA line that starts with `#` is a comment and is not installed.\n\nThis is the check that the build is really reading your profile and not a copy of somebody else's. The package list is the shortest path from what you wrote to what the machine will actually have on disk."
+    },
+    {
+      "label": "Building with mkarchiso — task: The boot test boots the ISO in a virtual machine and watches the serial console. Did it reach a login prompt?",
+      "text": "The boot test boots the ISO in a virtual machine and watches the serial console. Did it reach a login prompt?\n\nThe boot test is the last job in the pipeline, after the ISO is written and before the release is cut.\n\nLook for the \"boot test\" section of the log. It ends in either PASS or FAIL.\n\nA successful build only means the tools did not crash. Booting is a separate question, and it is the question that catches a missing initramfs hook, a kernel without the right modules, or a boot menu pointing at a directory that is not there. The pipeline runs this test before it publishes anything, so a broken image never reaches your release page."
+    },
+    {
+      "label": "Building with mkarchiso — task: The finished ISO has to be downloadable — a release in your own repository.",
+      "text": "The finished ISO has to be downloadable — a release in your own repository.\n\nThe release lives in the group `archiso-bootcamp-academy`, in your own project.\n\nThe URL ends with `/-/releases/<tag>/downloads/<filename>`.\n\nA release download is the artifact other people can use. It is the difference between an image that exists on your runner and an image you can hand to someone, or put on a USB stick, or boot in a virtual machine on another machine entirely."
+    },
+    {
+      "label": "Building with mkarchiso — the point",
+      "text": "You have an image. It was built from one commit of your profile, on a runner, not on your laptop; it carries the packages you listed, it boots to a login prompt, and it is downloadable from your own repository. From here on, every change you make has to go through the same loop: edit, commit, build, test."
+    },
+    {
+      "label": "Reading the errors — scenario",
+      "text": "Your build broke. The pipeline job went red, the ISO never appeared, and there is a wall of text between you and the answer. This is the part of ISO building that looks like luck and is not: the error is there, it is specific, and it can be read."
+    },
+    {
+      "label": "Reading the errors — the lesson",
+      "text": "A build error is a message with a shape. It usually names the tool that failed — `mksquashfs`, `pacman`, `mkarchiso` — and then names the thing it choked on: an option, a file, a path. Read it from the bottom up. The first line is often a symptom, something further up that looked fine until you read it again, and the last line is the cause. The log below stopped at its very first error; the others are behind it, waiting for you to fix this one and build again. Every one of them was hit for real while building a working image, and every one of them names something specific in your profile."
+    },
+    {
+      "label": "Reading the errors — The log, from the top",
+      "text": "$ ./archiso/mkarchiso -w work -o out profile\n\n[mkarchiso] INFO: mkarchiso configuration settings\n\n[mkarchiso] INFO:              Architecture:   x86_64\n\n[mkarchiso] INFO:         Working directory:   /home/runner/builds/vesper/work\n\n[mkarchiso] INFO:    Installation directory:   vesper\n\n[mkarchiso] INFO:          Output directory:   /home/runner/builds/vesper/out\n\n[mkarchiso] INFO:        Current build mode:   iso\n\n[mkarchiso] INFO:               Build modes:   iso\n\n[mkarchiso] INFO:                  Profile:   /home/runner/builds/vesper/profile\n\n[mkarchiso] INFO: Pacman configuration file:   /home/runner/builds/vesper/profile/pacman.conf\n\n[mkarchiso] INFO:          Image file name:   vesper-2026.11.10-x86_64.iso\n\n[mkarchiso] INFO:         ISO volume label:   VESPER_202611\n\n[mkarchiso] INFO: Validating options...\n\n[mkarchiso] INFO: Done!\n\n[mkarchiso] INFO: Copying custom pacman.conf to work directory...\n\n[mkarchiso] INFO: Using pacman CacheDir: /var/cache/pacman/pkg\n\nerror: config file mirrorlist could not be read: No such file or directory"
+    },
+    {
+      "label": "Reading the errors — How to read it",
+      "text": "The first thing in the log is a symptom: the job failed. The last line is the cause: `error: config file mirrorlist could not be read`. Everything between them is the build doing its job successfully.\n\nSo the order of the log is a map. `[mkarchiso] INFO:` lines are steps that succeeded. The log always stops at the step that did not, and the error follows it immediately. The step before the error tells you what kind of problem you are looking at.\n\nThree things make an error readable once you have found it: the tool that failed, the thing it was given, and the thing it was supposed to be given instead. Most build errors are one of the last two being wrong."
+    },
+    {
+      "label": "Reading the errors — The four failures in this profile",
+      "text": "The compression options in `profiledef.sh` were copied from a profile that uses a different compressor. The options belong to the compressor, not to the tool, so they do not transfer.\n\nThe `Include` in `pacman.conf` is relative. pacman resolves a relative include against the directory the build was started from, not against the directory the file is in.\n\nThe mirror in `pacman.conf` was inherited from a template. It serves package files but carries no repository databases, so pacman has nothing to resolve package names against.\n\nThe `file_permissions` entry in `profiledef.sh` names a file that is not in the image, so the path cannot be resolved inside it."
+    },
+    {
+      "label": "Reading the errors — task: Fix the root filesystem compression options in profiledef.sh so they are options the compressor you chose actually understands.",
+      "text": "Fix the root filesystem compression options in profiledef.sh so they are options the compressor you chose actually understands.\n\nThe options in `airootfs_image_tool_options` are passed straight through to mksquashfs. Ask what your compressor accepts.\n\n`mksquashfs -help-comp zstd` lists exactly one option for zstd. `-b 1M` is fine — that one is mksquashfs's own.\n\nThe compressor options are not mksquashfs options. mksquashfs hands the list to whichever compressor you named, and each compressor accepts a different set. Upstream's releng profile uses xz, so its option list is full of xz options. Copying that list into a zstd profile gives you an error that names the compressor rather than the option — which is why the fix is to look at which compressor you chose, not to memorise option lists."
+    },
+    {
+      "label": "Reading the errors — task: Read the mksquashfs error all the way to the bottom and set the option the compressor tells you it supports.",
+      "text": "Read the mksquashfs error all the way to the bottom and set the option the compressor tells you it supports.\n\nThe second half of the error message is the useful half. It names the option the compressor takes.\n\n`airootfs_image_tool_options=('-comp' 'zstd' '-Xcompression-level' '19' '-b' '1M')`\n\nThe second half of an error is often the better half. The first half says what went wrong; the second half says what the tool wanted instead. That is the whole distance between guessing and knowing."
+    },
+    {
+      "label": "Reading the errors — task: Make the pacman configuration resolve on its own, whatever directory the build is started from.",
+      "text": "Make the pacman configuration resolve on its own, whatever directory the build is started from.\n\nThe problem is not that the file is missing. It is that pacman looked for it in the wrong place.\n\nEither `Include = /etc/pacman.d/mirrorlist`, or no Include at all and a `Server =` line under each repository.\n\nThis is the error that punishes you for building from a different directory than last time. `mkarchiso` calls `pacman-conf` from wherever you invoked it, and a relative Include is resolved against that directory. The reference profile avoids the trap entirely by writing the servers out in full, so the profile reads the same from anywhere."
+    },
+    {
+      "label": "Reading the errors — task: Point the repository at a mirror that actually serves the repository databases.",
+      "text": "Point the repository at a mirror that actually serves the repository databases.\n\nA mirror that serves packages is not the same as a mirror that serves the package database.\n\nThe repository needs a line like `Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch`.\n\nThe `.db` files are the indexes: they are what pacman reads to answer \"what versions of nano exist\". A mirror that serves packages without serving the databases is a mirror that can download a file once pacman knows its name, and nothing more. The error names a database, not a package, because the database is the first thing pacman asks for."
+    },
+    {
+      "label": "Reading the errors — task: Make every path in `file_permissions` resolve inside the image.",
+      "text": "Make every path in `file_permissions` resolve inside the image.\n\nWhich of the paths in `file_permissions` is actually in the profile's airootfs directory?\n\nThe profile ships `airootfs/etc/shadow`. It does not ship `airootfs/usr/local/bin/choose-mirror`.\n\nFiles copied out of the overlay arrive as 0644 and owned by root, with no executable bit — the overlay cannot carry permissions. `file_permissions` is the only way to set them, and it is applied to the overlay before the packages are installed, so it can only see the files your profile ships. The error says \"Outside of valid path\" because the path could not be resolved inside the image at all."
+    },
+    {
+      "label": "Reading the errors — the point",
+      "text": "You read four build errors and fixed all four. The skill is not knowing the messages — it is knowing what to look at when you meet a message you have never seen: the tool that failed, the thing it was given, and the thing it wanted instead."
+    },
+    {
+      "label": "Testing the image — scenario",
+      "text": "The pipeline went green and there is an ISO sitting in your release page. It is easy to stop here, and it is exactly where a lot of people stop by mistake. An image can be built perfectly and still be useless: it might not boot, it might boot to the wrong menu, or it might boot and then be unable to install a single package."
+    },
+    {
+      "label": "Testing the image — the lesson",
+      "text": "A build that succeeds is not a build that works. Two things have to be true, and they are separate things. The first is that the image boots: it needs a kernel, an initramfs built by mkinitcpio, the mkinitcpio-archiso hook that teaches that initramfs how to find the medium it is booting from, and a bootloader that starts all of it. The second is that the image contains what you meant it to contain: your packages, your boot menu, your mirrors, and a working pacman keyring. The pipeline builds the image, boots it under QEMU with the serial console as the only output, and prints what it found. Read that report. It is telling you what is in the image, not what you meant to put in it. One of the findings it reports is the one that catches people: a missing pacman keyring. Nothing in the boot log says anything is wrong. The image boots, the login prompt appears, and pacman inside it cannot install a single package."
+    },
+    {
+      "label": "Testing the image — What the boot test actually does",
+      "text": "The image is booted under QEMU with the serial console as the only output, and the test looks for a login prompt. If there is no login prompt, the test fails and prints the last twenty-five lines of the console.\n\nThe serial console is only visible because the reference profile puts `console=tty0 console=ttyS0,115200` on the kernel command line. Without it, the test would see nothing at all and pass without having checked anything.\n\nA kernel panic about mounting the root filesystem nearly always means one thing: the initramfs could not find the medium. Either mkinitcpio-archiso is not in the package list, so the initramfs has no idea what an ISO is, or the bootloader pointed it at the wrong place."
+    },
+    {
+      "label": "Testing the image — The keyring, which fails quietly",
+      "text": "pacman will not install anything it cannot verify. The keys it verifies against live in `/etc/pacman.d/gnupg`, and they have to be created at boot by `pacman-key --init` and `pacman-key --populate`. Neither happens on its own.\n\nThose two commands run from `pacman-init.service`. That service declares `Requires=etc-pacman.d-gnupg.mount` — the unit that mounts a tmpfs over `/etc/pacman.d/gnupg` so the keys live in memory and not on a read-only medium.\n\nHere is the trap: systemd treats a missing requirement as a failed dependency and drops the service. It does not print an error. The boot log says nothing at all. The image boots, the login prompt appears, and pacman cannot install anything. The test therefore does not only look for a login prompt; it also looks for the keyring mount in the log, and warns when it is not there.\n\nShip both units. One without the other is worse than neither, because it looks like you did the right thing."
+    },
+    {
+      "label": "Testing the image — Two pacman configurations",
+      "text": "The pacman configuration in your profile is the one the build uses. The pacman configuration inside the image is a different file, and it decides where the running system fetches packages from.\n\nThey come apart because `mkarchiso` calls `pacstrap` with `-c`, which copies the *build machine's* mirrorlist over the image's own once the transaction is done. An image that relies on `/etc/pacman.d/mirrorlist` is quietly using the builder's mirrors, not yours.\n\nSo the image needs its own mirror list, written into the overlay: `airootfs/etc/pacman.conf`. That file survives the package transaction, because `/etc/pacman.conf` is a `Backup =` file and pacman leaves an existing one alone."
+    },
+    {
+      "label": "Testing the image — task: The image has to reach a login prompt. Read the boot test in the log and fix whatever stops it.",
+      "text": "The image has to reach a login prompt. Read the boot test in the log and fix whatever stops it.\n\nThe boot test is at the bottom of the log. The last lines of the serial console are the ones worth reading.\n\nCompare your package list with the one in the previous lab: four packages are not optional, and one of them is missing.\n\nBooting exercises the whole chain at once: the kernel, the initramfs, the archiso hook that finds the medium, the bootloader that starts them, and the root filesystem underneath. A failure anywhere in that chain shows up here, and nowhere earlier — the build only writes files, it never runs them."
+    },
+    {
+      "label": "Testing the image — task: The boot menu has to introduce your flavour, not the default.",
+      "text": "The boot menu has to introduce your flavour, not the default.\n\nThe menu entry is in grub/grub.cfg, not in profiledef.sh.\n\nLook for the line that starts with `menuentry`.\n\nThe boot menu is the first thing anybody sees. It is also where the image announces which install directory it is going to boot, so a menu that says one thing and boots another is a real bug, not just untidiness."
+    },
+    {
+      "label": "Testing the image — task: The image has to carry the package you put in the list: nano.",
+      "text": "The image has to carry the package you put in the list: nano.\n\nThe package list is read one name per line.\n\nA line that starts with `#` is a comment, not a package.\n\nThis is the check that the build read *your* list and not a copy of somebody else's. It is also the check that tells you the pipeline built the commit you think it built."
+    },
+    {
+      "label": "Testing the image — task: The image has to fetch packages from the mirror you chose, not from the machine that built it.",
+      "text": "The image has to fetch packages from the mirror you chose, not from the machine that built it.\n\nThere are two pacman configurations. The one in the profile is for the build. The one in the image is in the airootfs overlay.\n\n`profile/airootfs/etc/pacman.conf` — give it the same `Server =` lines the build-time configuration has.\n\nAn image that silently borrows the builder's mirrors will keep working right up until the builder changes, or until somebody else builds it. Writing the servers into the overlay makes the image self-contained: it carries its own idea of where packages come from, and that idea is yours."
+    },
+    {
+      "label": "Testing the image — task: The image has to be able to install packages at runtime. That needs a working pacman keyring.",
+      "text": "The image has to be able to install packages at runtime. That needs a working pacman keyring.\n\nTwo units. One runs `pacman-key --init` and `pacman-key --populate`. The other gives them somewhere to work.\n\nThe missing one is a `.mount` unit: it mounts a tmpfs over /etc/pacman.d/gnupg.\n\nThis is the failure that costs people an afternoon. The image builds, it boots, it looks perfect, and the first `pacman -S` inside it fails. The service is dropped because its requirement is missing, and systemd drops it silently. The keyring is only ever created at boot, by the two commands in that service, and they only run if the mount is there. The boot test checks for the mount in the console log precisely because nothing else will."
+    },
+    {
+      "label": "Testing the image — task: Fix everything the report found, then rebuild until the job is green.",
+      "text": "Fix everything the report found, then rebuild until the job is green.\n\nThe report at the bottom of the log lists every finding, one per line.\n\nFix them all, then build again. The job only goes green when every check passes.\n\nA test you read once and ignore is worth nothing. The point of this lab is the loop: build, read the report, fix what it found, build again. That loop is how you find the problems that do not announce themselves — like a keyring that was never created."
+    },
+    {
+      "label": "Testing the image — the point",
+      "text": "You built an image, booted it, read what the test said, and fixed four things the test found — one of them the kind that never makes any noise. A build that succeeds is only the beginning; the image has to boot, carry what you meant, and be able to install things when somebody sits down in front of it."
+    },
+    {
+      "label": "Making it yours — scenario",
+      "text": "Everything works. The image builds, it boots, it has a keyring. It is also called Vesper, it greets people with a banner somebody else wrote, and it carries the packages somebody else chose for you. A flavour is not a copy of a working profile — it is a set of decisions somebody made, written down, and committed. This is where you make yours."
+    },
+    {
+      "label": "Making it yours — the lesson",
+      "text": "You have the pieces now. The last step is making them yours: the name, the description, the packages, the look, and the banner people see when they log in. Some of it is obvious. Some of it is not, and the not-obvious part is knowing what to change and what to leave alone. The name, the label, the publisher and the application string are yours — they are free-form strings that end up in the image's metadata and on the disc. The package list is yours, but four of its entries are not optional: without `linux`, `mkinitcpio`, `mkinitcpio-archiso` and `base` you do not have an operating system, you have a directory. The boot modes, the image type and the compression options belong to the tool; leave them alone unless you know why you are changing them. And the last step of making a flavour yours is committing it. A flavour is a git repository, and the pipeline builds a commit — so a flavour that is not committed has never been built, and nobody else can build it either."
+    },
+    {
+      "label": "Making it yours — What to change",
+      "text": "`iso_name` — the first half of the output file name. It becomes the file on your release page, so keep it lower case and without spaces.\n\n`iso_label` — the volume label on the disc, upper case, at most 32 characters. It is what the bootloader searches for, and it is usually your name and the date.\n\n`iso_publisher` and `iso_application` — free-form strings that go into the ISO metadata. Who publishes this, and what is it for.\n\n`packages.<arch>` — what the image has on it, and why. A package with a comment next to it is a decision; a package without one is a guess.\n\n`airootfs/etc/motd` — the banner printed when somebody logs in.\n\nThe `menuentry` title in `grub/grub.cfg` — the boot menu."
+    },
+    {
+      "label": "Making it yours — What to leave alone",
+      "text": "`base`, `linux`, `mkinitcpio` and `mkinitcpio-archiso` in the package list. archiso cannot produce a bootable image without them, and the failure is not obvious when it happens.\n\nThe boot modes, unless you know what you are doing: dropping `uefi.grub` means the image will not boot on a modern machine.\n\n`airootfs_image_type` and the compressor options. They decide how the root filesystem is packed, and the defaults are good.\n\nThe `bootmodes` and the packages that match them. If you add a boot loader to `bootmodes`, its package has to be in the list too."
+    },
+    {
+      "label": "Making it yours — The last step is a commit",
+      "text": "Your flavour is a git repository, and the build pipeline checks out one commit and builds that. So the state of your repository is the state of your flavour: if your changes are not committed, they have not been built, and the next person to clone your repository gets the old version.\n\nThe terminal is right there. `git status` shows you what is uncommitted, `git add .` stages the profile, and `git commit` records it."
+    },
+    {
+      "label": "Making it yours — task: Give the image your own name. It is not Vesper any more — it is yours.",
+      "text": "Give the image your own name. It is not Vesper any more — it is yours.\n\nThe name is one line near the top of profiledef.sh.\n\nIt has to be the name of your flavour, and it has to be usable in a file name.\n\nThe name is the first thing a person sees: it is the file on the release page, the directory on the ISO, and the title of the release itself. Giving it a name that means something to you is the whole difference between a working profile and a flavour."
+    },
+    {
+      "label": "Making it yours — task: The volume label has to follow the new name.",
+      "text": "The volume label has to follow the new name.\n\nThe label is the name in upper case. The date usually follows it.\n\n`iso_label=\"LUMEN_202611\"` — whatever your own name is, in upper case.\n\nThe volume label is how the machine finds the medium: the bootloader searches for a filesystem with that label and boots what it finds. It has to match the name you chose, and it has to be something you can type."
+    },
+    {
+      "label": "Making it yours — task: Write the publisher and the application string for your own flavour.",
+      "text": "Write the publisher and the application string for your own flavour.\n\nThey are free-form. There is no format to follow, only a truth to state.\n\nLook at the two lines in profiledef.sh with `iso_publisher` and `iso_application` in them.\n\nThese strings are metadata, and metadata is how a disc describes itself to software and to people. \"Who made this\" and \"what is this for\" are the two questions a stranger asks when they find your image."
+    },
+    {
+      "label": "Making it yours — task: Add a package that is yours — something your flavour needs that the reference does not have — and say in a comment why it is there.",
+      "text": "Add a package that is yours — something your flavour needs that the reference does not have — and say in a comment why it is there.\n\nOne package name per line. A `#` starts a comment, and mkarchiso ignores it.\n\nSomething like `curl  # so the image can talk to the network` on its own line, or on the line above the package.\n\nThis is where a profile becomes a set of decisions rather than a list. The comment is not decoration: it is the reason the package is there, written down for the next person — which is you, in six months, wondering why you needed it."
+    },
+    {
+      "label": "Making it yours — task: Make the banner your flavour prints at login say hello.",
+      "text": "Make the banner your flavour prints at login say hello.\n\nThe motd is `airootfs/etc/motd`. It is copied into the image as it is.\n\nThe first line of the file is the line people see.\n\nThe motd is the only text in the image that is written for people rather than for the machine. It is where you can say what the flavour is, or what to do with it, or who to ask when it breaks."
+    },
+    {
+      "label": "Making it yours — task: The boot menu has to introduce your flavour too.",
+      "text": "The boot menu has to introduce your flavour too.\n\nLook for the `menuentry` line in grub/grub.cfg.\n\nThe text between the first pair of quotes is the title.\n\nThe boot menu is the first thing on screen and the first thing a screenshot of your image shows. It is also the one piece of your flavour that everybody sees before they have even logged in."
+    },
+    {
+      "label": "Making it yours — task: Commit your flavour. The pipeline builds a commit, so anything you have not committed has not been built.",
+      "text": "Commit your flavour. The pipeline builds a commit, so anything you have not committed has not been built.\n\nThe terminal is below the files: `git status`, `git add .`, then `git commit -m \"...\"`.\n\n`git commit -m \"Add my flavour\"` — the message can be whatever describes the change.\n\nThis is the thing the whole course has been building towards. You did not follow a recipe: you took a profile that worked, read it, changed what you wanted, and left the rest alone. What you have now is not a copy — it is a flavour, with your name on it, your packages in it, your banner on the screen. And it is in version control, which means it can be built again and again, by you and by anyone else who clones it."
+    },
+    {
+      "label": "Making it yours — the point",
+      "text": "That is yours. The name, the label, the metadata, the packages, the banner and the boot menu all say the same thing, and they say it because you decided they should. The profile still looks like the one you started from, and that is the point: the parts you did not understand are still exactly where they were."
+    }
+  ]
+}

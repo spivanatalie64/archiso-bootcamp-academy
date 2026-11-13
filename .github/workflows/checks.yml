@@ -1,0 +1,125 @@
+name: checks
+
+# Every push gets the labs verified and the site driven in a real browser.
+#
+# The academy's promise is that a lab is a working thing a learner can
+# finish. That promise is checkable, so it is checked on every push: the
+# labs are verified to be solvable, and the site is driven to confirm it
+# renders them.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  labs:
+    name: verify the labs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify every lab is solvable
+        run: node tools/verify-labs.mjs
+
+      - name: Verify the helper grounds correctly and refuses when it should
+        run: node tools/worker-check.mjs
+
+      - name: Regenerate the course text and check it is current
+        run: |
+          node tools/build-course-text.mjs
+          if ! git diff --quiet -- site/content/course.json; then
+            echo "site/content/course.json is out of date."
+            echo "Run 'node tools/build-course-text.mjs' and commit the result."
+            git diff -- site/content/course.json | head -40
+            exit 1
+          fi
+
+      - name: Check the build pipeline is well formed
+        run: |
+          python3 - <<'PY'
+          import yaml, subprocess, tempfile, os, sys
+          d = yaml.safe_load(open('template/.gitlab-ci.yml'))
+          bad = 0
+          for name, job in d.items():
+              if not isinstance(job, dict) or 'script' not in job:
+                  continue
+              script = job['script']
+              if isinstance(script, str):
+                  script = [script]
+              for i, block in enumerate(script):
+                  with tempfile.NamedTemporaryFile('w', suffix='.sh', delete=False) as f:
+                      f.write(block)
+                      path = f.name
+                  r = subprocess.run(['bash', '-n', path], capture_output=True, text=True)
+                  if r.returncode != 0:
+                      bad += 1
+                      print(f'{name} script[{i}]: {r.stderr.strip()[:300]}')
+                  os.unlink(path)
+          if bad:
+              sys.exit(1)
+          print('the build pipeline is well formed')
+          PY
+
+  site:
+    name: drive the site in a browser
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm install --no-save playwright@1.65.0
+      - run: npx playwright install --with-deps chromium
+
+      - name: Serve the site
+        run: |
+          cd site
+          nohup python3 -m http.server 8765 --bind 127.0.0.1 > /tmp/http.log 2>&1 &
+          for i in $(seq 1 20); do
+            if curl -sf http://127.0.0.1:8765/index.html > /dev/null; then break; fi
+            sleep 0.5
+          done
+
+      - name: The framework passes its own self-test
+        run: |
+          node - <<'JS'
+          import('playwright').then(async ({ chromium }) => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+            const errors = [];
+            page.on('pageerror', (e) => errors.push(e.message));
+            await page.goto('http://127.0.0.1:8765/selftest.html', { waitUntil: 'networkidle' });
+            await page.waitForTimeout(2500);
+            const result = await page.evaluate(() => window.__selftest);
+            await browser.close();
+            if (result && result.error) { console.error(result.error); process.exit(1); }
+            if (!result || result.failed.length) {
+              console.error('selftest failed:', JSON.stringify(result));
+              process.exit(1);
+            }
+            if (errors.length) { console.error('page errors:', errors); process.exit(1); }
+            console.log(`selftest: ${result.passed}/${result.total} passed`);
+          });
+          JS
+
+      - name: Every lab renders
+        run: node tools/browser-check.mjs http://127.0.0.1:8765
+
+      - name: Upload the screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab-screenshots
+          path: screenshots/
+          if-no-files-found: ignore

@@ -1,0 +1,7 @@
+{
+  "name": "acreetionos-academy-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The ArchISO Bootcamp Academy — static site. No build step; this file only tells Node how to read the ES modules when generating the course text.",
+  "type": "module"
+}

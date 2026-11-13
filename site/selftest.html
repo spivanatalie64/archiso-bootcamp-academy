@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Framework self-test</title>
+<link rel="stylesheet" href="assets/academy.css">
+<style>
+  .selftest-summary { padding: 24px 20px 60px; max-width: 720px; margin: 0 auto; }
+  .selftest-summary ul { list-style: none; padding: 0; }
+  .selftest-summary li { padding: 4px 0; border-bottom: 1px solid var(--line); font-size: 0.92em; }
+  .selftest-summary li.ok { color: var(--good); }
+  .selftest-summary li.fail { color: var(--bad); font-weight: 600; }
+</style>
+</head>
+<body>
+<main class="shell">
+  <h1>Framework self-test</h1>
+  <p class="lede">Exercises the lab runner, the simulator and the checks against a synthetic lab.</p>
+  <div data-test></div>
+</main>
+<script type="module" src="assets/selftest.js"></script>
+</body>
+</html>

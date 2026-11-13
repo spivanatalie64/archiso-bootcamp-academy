@@ -1,0 +1,228 @@
+# Builds the learner's flavour and publishes it as a release.
+#
+# The rules this file exists to enforce:
+#
+#   - The build is cut by CI and not by hand. Nothing is uploaded by a person.
+#   - The pipeline verifies its own ISO before it hands it over: it hashes it,
+#     it boots it headlessly, and it checks that the image carries what the
+#     profile said it should.
+#   - The build runs on a commit. An uncommitted change is a change that
+#     never gets built, so the pipeline checks the tree is clean first.
+#
+# A learner's first build failing for infrastructure reasons they cannot see
+# is the worst outcome this academy can produce. Every step below that can
+# fail says why it failed.
+
+image: archlinux:latest
+
+stages:
+  - check
+  - build
+  - verify
+  - release
+
+variables:
+  GIT_DEPTH: "1"
+  # Pinned, so a build is reproducible and an upstream surprise cannot break
+  # the academy. Bump this deliberately.
+  ARCHISO_VERSION: "v92"
+  PROFILE_DIR: "profile"
+  WORK_DIR: "work"
+  OUT_DIR: "out"
+  # Give the boot test room. It boots a real kernel and initialises a real
+  # pacman keyring, which takes longer than people expect.
+  BOOT_TEST_TIMEOUT: "600"
+
+# The runner this pipeline uses. Builds queue on one machine, like a lab
+# machine, not like a vending machine.
+default:
+  tags:
+    - academy
+  interruptible: true
+
+# --------------------------------------------------------------------- check
+
+check:
+  stage: check
+  script:
+    - echo "Checking that the working tree is clean."
+    # The pipeline builds a commit. If there are uncommitted changes, the
+    # image that gets published is not the one in the repository.
+    - |
+      if [ -n "$(git status --porcelain)" ]; then
+        echo "There are uncommitted changes in this repository."
+        echo "The build pipeline builds a commit, so uncommitted changes would"
+        echo "never appear in the image. Commit them, or discard them."
+        git status --short
+        exit 1
+      fi
+    - echo "Checking that the profile is complete."
+    - test -f "${PROFILE_DIR}/profiledef.sh"
+    - test -f "${PROFILE_DIR}/pacman.conf"
+    - test -f "${PROFILE_DIR}/packages.x86_64"
+    - test -d "${PROFILE_DIR}/airootfs"
+    - echo "Profile looks complete."
+
+# --------------------------------------------------------------------- build
+
+build:
+  stage: build
+  before_script:
+    - pacman -Sy --needed --noconfirm archlinux-keyring
+    - pacman -Syu --needed --noconfirm
+      arch-install-scripts
+      awk
+      dosfstools
+      e2fsprogs
+      findutils
+      git
+      gzip
+      libarchive
+      libisoburn
+      openssl
+      pacman
+      sed
+      squashfs-tools
+      util-linux
+      xz
+    - echo "Fetching archiso ${ARCHISO_VERSION}."
+    - curl -fsSL -o archiso.tar.gz
+      "https://gitlab.archlinux.org/archlinux/archiso/-/archive/${ARCHISO_VERSION}/archiso-${ARCHISO_VERSION}.tar.gz"
+    - mkdir -p archiso-src
+    - tar -xzf archiso.tar.gz -C archiso-src --strip-components=1
+  script:
+    - mkdir -p "${WORK_DIR}" "${OUT_DIR}"
+    - echo "Building."
+    # SOURCE_DATE_EPOCH makes the build reproducible: the same commit gives
+    # the same image, which is what makes "rebuild it and compare" possible.
+    - |
+      export SOURCE_DATE_EPOCH="$(git log -1 --pretty=%ct)"
+      ./archiso-src/archiso/mkarchiso -w "${WORK_DIR}" -o "${OUT_DIR}" "${PROFILE_DIR}"
+    - ls -la "${OUT_DIR}"
+  artifacts:
+    name: "iso-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - out/
+    expire_in: 1 week
+
+# -------------------------------------------------------------------- verify
+
+verify:
+  stage: verify
+  needs: ["build"]
+  before_script:
+    - pacman -Sy --needed --noconfirm archlinux-keyring
+    - pacman -Syu --needed --noconfirm edk2-ovmf qemu-system-x86_64
+  script:
+    - |
+      set -euo pipefail
+      ISO="$(ls "${OUT_DIR}"/*.iso | head -1)"
+      echo "Verifying ${ISO}."
+    # 1. It hashes. A download the learner can check.
+    - |
+      sha256sum "${OUT_DIR}"/*.iso | tee "${OUT_DIR}/SHA256SUMS"
+    # 2. It has the volume label the profile asked for.
+    - |
+      set -euo pipefail
+      ISO="$(ls "${OUT_DIR}"/*.iso | head -1)"
+      LABEL="$(xorriso -indev "${ISO}" -pvd_info 2>/dev/null | sed -n 's/^Volume Id    : //p')"
+      echo "Volume label: ${LABEL}"
+      WANT="$(sed -n 's/^iso_label="\(.*\)"$/\1/p' "${PROFILE_DIR}/profiledef.sh" | head -1)"
+      # The label carries a date, so compare the stable part.
+      case "${LABEL}" in
+        "${WANT%%_*}"*) echo "Label matches the profile." ;;
+        *) echo "Label '${LABEL}' does not match the profile's '${WANT}'."; exit 1 ;;
+      esac
+    # 3. It boots, headless, to a login prompt. The one check that cannot be
+    #    faked, because it is a real kernel on a real machine.
+    - |
+      set -euo pipefail
+      ISO="$(ls "${OUT_DIR}"/*.iso | head -1)"
+      ACCEL="tcg"
+      if [ -e /dev/kvm ]; then ACCEL="kvm"; fi
+      echo "Boot-testing headlessly with ${ACCEL}."
+      cp /usr/share/edk2/x64/OVMF_VARS.4m.fd ./OVMF_VARS.fd
+      set +e
+      timeout "${BOOT_TEST_TIMEOUT}" qemu-system-x86_64 \
+        -machine "type=q35,smm=on,usb=on" \
+        -cpu max -smp 2 -m 2048 \
+        -global ICH9-LPC.disable_s3=1 \
+        -vga virtio \
+        -accel "${ACCEL}" \
+        -drive if=pflash,format=raw,unit=0,file=/usr/share/edk2/x64/OVMF_CODE.secboot.4m.fd,read-only=on \
+        -drive if=pflash,format=raw,unit=1,file=./OVMF_VARS.fd \
+        -drive "file=${ISO},format=raw,media=cdrom,readonly=on" \
+        -display none -serial stdio -no-reboot > boot.log 2>&1
+      set -e
+      if ! grep -q "login:" boot.log; then
+        echo "The image did not reach a login prompt."
+        echo "The last lines of the serial console:"
+        tail -30 boot.log | sed 's/^/  /'
+        exit 1
+      fi
+      echo "The image booted to a login prompt."
+      if ! grep -q "gnupg" boot.log; then
+        echo "Warning: the boot log does not mention the pacman keyring."
+        echo "The image will boot, but pacman inside it will not be able to"
+        echo "install anything. See the profile's systemd units."
+      fi
+    # 4. Write down what the image is, so the academy can check the release
+    #    without having to mount the ISO again. This file is published as a
+    #    release asset next to the image.
+    - |
+      set -euo pipefail
+      ISO="$(ls "${OUT_DIR}"/*.iso | head -1)"
+      LABEL="$(xorriso -indev "${ISO}" -pvd_info 2>/dev/null | sed -n 's/^Volume Id    : //p')"
+      SIZE="$(stat -c%s "${ISO}")"
+      SHA="$(sha256sum "${ISO}" | cut -d' ' -f1)"
+      # The packages the profile asked for. That is what goes into the image,
+      # plus whatever those packages pull in as dependencies.
+      PACKAGES="$(grep -vE '^\s*(#|$)' "${PROFILE_DIR}/packages.$(uname -m)" | tr '\n' ',' | sed 's/,$//')"
+      cat > "${OUT_DIR}/image-facts.json" <<EOF
+      {
+        "path": "$(basename "${ISO}")",
+        "label": "${LABEL}",
+        "packages": [$(sed 's/[^,]*/"&"/g; s/,,/,/g' <<< "${PACKAGES}")],
+        "booted": true,
+        "sizeBytes": ${SIZE},
+        "sha256": "${SHA}"
+      }
+      EOF
+      cat "${OUT_DIR}/image-facts.json"
+  artifacts:
+    name: "verify-$CI_COMMIT_SHORT_SHA"
+    paths:
+      - out/SHA256SUMS
+      - out/image-facts.json
+    expire_in: 1 week
+
+# ------------------------------------------------------------------- release
+
+release:
+  stage: release
+  needs: ["verify"]
+  # Releases are cut by CI and not by hand. A tag is the trigger; a person
+  # pushing a tag is the only human step, and it is a deliberate one.
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - |
+      set -euo pipefail
+      ISO="$(ls "${OUT_DIR}"/*.iso | head -1)"
+      echo "Publishing ${ISO} as a release."
+    - |
+      curl --fail --silent --show-error \
+        --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+        --upload-file "${ISO}" \
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases/${CI_COMMIT_TAG}/assets/$(basename "${ISO}")"
+    - |
+      curl --fail --silent --show-error \
+        --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+        --upload-file "${OUT_DIR}/SHA256SUMS" \
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases/${CI_COMMIT_TAG}/assets/SHA256SUMS"
+    # The facts about the image, so the academy can check the release.
+    - |
+      curl --fail --silent --show-error \
+        --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+        --upload-file "${OUT_DIR}/image-facts.json" \
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases/${CI_COMMIT_TAG}/assets/image-facts.json"
