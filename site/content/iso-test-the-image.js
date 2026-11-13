@@ -804,34 +804,124 @@ export const isoTestTheImage = {
    */
   solution: (s) => {
     const files = {
-      'packages.x86_64': PACKAGES,
-      'pacman.conf': PACMAN_CONF,
-      'grub/grub.cfg': GRUB_CFG,
-      'airootfs/etc/pacman.conf': RUNTIME_PACMAN_CONF,
-      'airootfs/etc/systemd/system/pacman-init.service': PACMAN_INIT_SERVICE,
-      'airootfs/etc/systemd/system/etc-pacman.d-gnupg.mount': GNUPG_MOUNT,
-    };
+      // The package list, with the initramfs hook the boot test was missing.
+      // Without it the initramfs has no idea what an ISO is, so the image
+      // cannot mount its own root filesystem.
+      'packages.x86_64': `#
+# Packages installed into the Vesper image.
+#
+# One package per line. Blank lines and lines starting with # are ignored.
 
-    // The profile, with the four things the test found, fixed.
-    files['packages.x86_64'] = PACKAGES.replace(
-      'mkinitcpio\n',
-      'mkinitcpio\nmkinitcpio-archiso\n'
-    );
-    files['grub/grub.cfg'] = GRUB_CFG.replace(
-      'menuentry "Arch Linux (%ARCH%, ${archiso_platform})"',
-      'menuentry "Vesper Linux (%ARCH%, ${archiso_platform})"'
-    );
-    files['airootfs/etc/pacman.conf'] = RUNTIME_PACMAN_CONF.replace(
-      'Include = /etc/pacman.d/mirrorlist',
-      'Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch'
-    );
-    files['airootfs/etc/systemd/system/etc-pacman.d-gnupg.mount'] =
-      GNUPG_MOUNT.replace(
-        '[Unit]\nDescription=Temporary /etc/pacman.d/gnupg directory\n',
-        '[Unit]\nDescription=Temporary /etc/pacman.d/gnupg directory\n\n' +
-        '[Mount]\nWhat=tmpfs\nWhere=/etc/pacman.d/gnupg\nType=tmpfs\n' +
-        'Options=mode=0755,noswap\n'
-      );
+base
+linux
+mkinitcpio
+mkinitcpio-archiso
+
+# Boot loaders, matched to the bootmodes in profiledef.sh.
+syslinux
+grub
+
+# A shell and a text editor, so the image is usable from a serial console
+# and so a student can change something inside the running system.
+nano
+
+# Enough tooling to look around at what the image actually contains.
+git
+tree
+file
+`,
+      // The build-time configuration. It was already right.
+      'pacman.conf': PACMAN_CONF,
+
+      // The boot menu, which still introduced the default instead of the
+      // flavour.
+      'grub/grub.cfg': `# GRUB configuration for the image.
+#
+# The identifiers in percent signs are replaced by mkarchiso when the image
+# is built:
+#   %INSTALL_DIR%  — the install_dir from profiledef.sh
+#   %ARCH%         — the target architecture
+#   %ARCHISO_UUID% — the ISO 9660 volume id, used to find the medium at boot
+
+insmod part_gpt
+insmod part_msdos
+insmod fat
+insmod iso9660
+insmod normal
+insmod search_label
+
+# Set default menu entry
+default=vesper
+timeout=15
+timeout_style=menu
+
+# Menu entries
+
+menuentry "Vesper Linux (%ARCH%, \${archiso_platform})" --class vesper --class gnu-linux --class gnu --class os --id 'vesper' {
+    set gfxpayload=keep
+    linux /%INSTALL_DIR%/boot/%ARCH%/vmlinuz-linux archisobasedir=%INSTALL_DIR% archisosearchuuid=%ARCHISO_UUID% console=tty0 console=ttyS0,115200
+    initrd /%INSTALL_DIR%/boot/%ARCH%/initramfs-linux.img
+}
+
+menuentry 'System shutdown' --class shutdown --class poweroff {
+    echo 'System shutting down...'
+    halt
+}
+
+menuentry 'System restart' --class reboot --class restart {
+    echo 'System rebooting...'
+    reboot
+}
+`,
+
+      // The configuration inside the running image. It now names its own
+      // mirrors, so it does not fall back to the builder's mirrorlist.
+      'airootfs/etc/pacman.conf': `#
+# The pacman configuration inside the RUNNING image.
+#
+# This is the one the pacman package installed, unchanged.
+#
+
+[options]
+Architecture = auto
+HoldPkg     = pacman glibc
+ParallelDownloads = 5
+SigLevel    = Required DatabaseOptional
+LocalFileSigLevel = Optional
+
+[core]
+Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch
+
+[extra]
+Server = https://geo.mirror.pkgbuild.com/$repo/os/$arch
+`,
+
+      // The service that creates the keyring. It was already right, and it
+      // says so: the missing half was the mount it requires.
+      'airootfs/etc/systemd/system/pacman-init.service': PACMAN_INIT_SERVICE,
+
+      // The mount unit, finished. It mounts a tmpfs over the directory
+      // pacman keeps its trusted keys in, so the keys live in memory and
+      // never touch the read-only medium.
+      'airootfs/etc/systemd/system/etc-pacman.d-gnupg.mount': `# The pacman keyring is mounted as a tmpfs at boot, so the trusted keys live
+# in memory and never touch the medium.
+#
+# This unit has to be shipped alongside pacman-init.service. The service
+# declares \`Requires=etc-pacman.d-gnupg.mount\`, and systemd treats a
+# missing requirement as a failed dependency: the service is dropped without
+# a word in the boot log, the keyring is never initialised, and pacman in the
+# running image cannot install anything.
+
+[Unit]
+Description=Temporary /etc/pacman.d/gnupg directory
+
+[Mount]
+What=tmpfs
+Where=/etc/pacman.d/gnupg
+Type=tmpfs
+Options=mode=0755,noswap
+`,
+    };
 
     for (const [path, content] of Object.entries(files)) {
       if (s.sim) s.sim.writeFile(path, content);
